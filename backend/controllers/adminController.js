@@ -3,6 +3,63 @@ const Course   = require('../models/Course');
 const Progress = require('../models/Progress');
 const Comment  = require('../models/Comment');
 
+// ── GET /api/admin/courses ────────────────────────
+// Todos los cursos incluyendo no publicados
+exports.getAllCourses = async (req, res) => {
+  try {
+    const courses = await Course.find().sort('order');
+    res.json({ success: true, courses });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// ── PUT /api/admin/users/:id/access ──────────────
+// Gestionar suscripción y acceso individual a cursos
+exports.updateAccess = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+
+    const { action, plan, status, endDate, courseId } = req.body;
+
+    if (action === 'grant-course' && courseId) {
+      const already = user.subscription.courseAccess.some(id => id.toString() === courseId);
+      if (!already) user.subscription.courseAccess.push(courseId);
+    } else if (action === 'revoke-course' && courseId) {
+      user.subscription.courseAccess = user.subscription.courseAccess.filter(
+        id => id.toString() !== courseId
+      );
+    } else if (action === 'set-subscription') {
+      user.subscription.plan      = plan;
+      user.subscription.status    = status || 'active';
+      user.subscription.startDate = user.subscription.startDate || new Date();
+      user.subscription.endDate   = plan === 'lifetime' ? null : (endDate ? new Date(endDate) : null);
+    } else if (action === 'cancel-subscription') {
+      user.subscription.status = 'cancelled';
+    }
+
+    await user.save({ validateBeforeSave: false });
+    const updated = await User.findById(user._id).select('-password');
+    res.json({ success: true, user: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// ── PUT /api/admin/comments/:id/toggle ───────────
+exports.toggleComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) return res.status(404).json({ success: false, message: 'Comentario no encontrado' });
+    comment.isHidden = !comment.isHidden;
+    await comment.save();
+    res.json({ success: true, comment });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // ── GET /api/admin/stats ──────────────────────────
 exports.getStats = async (req, res) => {
   try {

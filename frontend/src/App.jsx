@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import AdminRoute from './components/AdminRoute';
+
 import HomePage from './pages/HomePage';
 import CoursePage from './pages/CoursePage';
 import LoginPage from './pages/LoginPage';
@@ -8,6 +10,13 @@ import RegisterPage from './pages/RegisterPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminCourses from './pages/admin/AdminCourses';
+import AdminVideos from './pages/admin/AdminVideos';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminComments from './pages/admin/AdminComments';
 
 function App() {
     return (
@@ -24,6 +33,15 @@ function App() {
                     {/* App (privado) */}
                     <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
                     <Route path="/cursos/:slug" element={<PrivateRoute><CoursePage /></PrivateRoute>} />
+
+                    {/* Admin (privado + rol admin) */}
+                    <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="cursos" element={<AdminCourses />} />
+                        <Route path="cursos/:courseId/videos" element={<AdminVideos />} />
+                        <Route path="usuarios" element={<AdminUsers />} />
+                        <Route path="comentarios" element={<AdminComments />} />
+                    </Route>
 
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
