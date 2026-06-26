@@ -2,22 +2,19 @@ const crypto = require('crypto');
 const Video  = require('../models/Video');
 const Course = require('../models/Course');
 
-// ── Generar URL firmada de Bunny.net ──────────────
-// Protege el video para que solo se reproduzca desde tu dominio
+// ── Generar URL firmada del iframe embed de Bunny.net ──
+// Usa "Embed view token authentication" (no acceso directo al CDN)
 const getBunnySignedUrl = (videoId) => {
-  const hostname    = process.env.BUNNY_CDN_HOSTNAME;
-  const securityKey = process.env.BUNNY_TOKEN_AUTH_KEY;
-  const expiry      = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hora
-  const path        = `/videos/${videoId}/play`;
+  const libraryId    = process.env.BUNNY_LIBRARY_ID;
+  const securityKey  = process.env.BUNNY_TOKEN_AUTH_KEY;
+  const expiry        = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hora
 
-  const hashString  = `${securityKey}${path}${expiry}`;
-  const token       = crypto
+  const token = crypto
     .createHash('sha256')
-    .update(hashString)
-    .digest('base64')
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    .update(`${securityKey}${videoId}${expiry}`)
+    .digest('hex');
 
-  return `https://${hostname}${path}?token=${token}&expires=${expiry}`;
+  return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?token=${token}&expires=${expiry}`;
 };
 
 // ── GET /api/videos/:id/stream ────────────────────

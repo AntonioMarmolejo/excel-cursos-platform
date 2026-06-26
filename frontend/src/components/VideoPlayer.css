@@ -9,39 +9,5 @@
   width: 100%;
   height: 100%;
   display: block;
-}
-
-.player-error {
-  aspect-ratio: 16 / 9;
-  background: #1a1a1a;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #888;
-}
-
-.player-error-icon {
-  font-size: 2rem;
-  color: #f87171;
-}
-
-.player-error p {
-  margin: 0;
-  font-size: 0.95rem;
-}
-
-.player-error button {
-  padding: 8px 20px;
-  background: var(--primary);
-  color: white;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
-.player-error button:hover {
-  background: var(--primary-dark);
 }

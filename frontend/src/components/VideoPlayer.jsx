@@ -1,66 +1,50 @@
-import { useEffect, useRef, useState } from 'react';
-import Hls from 'hls.js';
+import { useEffect, useRef } from 'react';
 import './VideoPlayer.css';
 
+let playerjsPromise = null;
+function loadPlayerJs() {
+  if (window.playerjs) return Promise.resolve();
+  if (playerjsPromise) return playerjsPromise;
+  playerjsPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = '//assets.mediadelivery.net/playerjs/playerjs-latest.min.js';
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+  return playerjsPromise;
+}
+
 export default function VideoPlayer({ src, title, onEnded }) {
-  const videoRef = useRef(null);
-  const hlsRef   = useRef(null);
-  const [error, setError] = useState(null);
+  const iframeRef = useRef(null);
 
   useEffect(() => {
-    if (!src || !videoRef.current) return;
+    if (!src) return;
+    let player;
+    let cancelled = false;
 
-    setError(null);
-    const video = videoRef.current;
-
-    if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; }
-
-    const isHls = src.includes('.m3u8') || src.includes('playlist');
-
-    if (isHls && Hls.isSupported()) {
-      const hls = new Hls({ enableWorker: true, startLevel: -1 });
-      hls.loadSource(src);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-      hls.on(Hls.Events.ERROR, (_, data) => {
-        if (data.fatal) setError('No se pudo cargar el video. Intenta de nuevo.');
+    loadPlayerJs().then(() => {
+      if (cancelled || !iframeRef.current) return;
+      player = new window.playerjs.Player(iframeRef.current);
+      player.on('ready', () => {
+        if (onEnded) player.on('ended', onEnded);
       });
-      hlsRef.current = hls;
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari native HLS
-      video.src = src;
-      video.play().catch(() => {});
-    } else {
-      video.src = src;
-      video.play().catch(() => {});
-    }
+    });
 
-    return () => {
-      if (hlsRef.current) { hlsRef.current.destroy(); hlsRef.current = null; }
-      video.pause();
-      video.src = '';
-    };
-  }, [src]);
+    return () => { cancelled = true; };
+  }, [src, onEnded]);
 
-  if (error) {
-    return (
-      <div className="player-error">
-        <span className="player-error-icon">⚠</span>
-        <p>{error}</p>
-        <button onClick={() => setError(null)}>Reintentar</button>
-      </div>
-    );
-  }
+  if (!src) return null;
 
   return (
     <div className="player-wrapper">
-      <video
-        ref={videoRef}
-        className="video-element"
-        controls
-        playsInline
+      <iframe
+        ref={iframeRef}
+        src={src}
         title={title}
-        onEnded={onEnded}
+        className="video-element"
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+        allowFullScreen
       />
     </div>
   );
