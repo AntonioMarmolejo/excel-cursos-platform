@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import VideoPlayer from '../components/VideoPlayer';
 import VideoList from '../components/VideoList';
 import LockedOverlay from '../components/LockedOverlay';
-import './CoursePage.css';
+import '../styles/CoursePage.css';
 
 export default function CoursePage() {
   const { slug }   = useParams();

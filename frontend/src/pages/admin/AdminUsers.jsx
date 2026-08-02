@@ -103,13 +103,13 @@ export default function AdminUsers() {
                         {users.length === 0 && <tr><td colSpan={6} className="admin-empty">No hay usuarios</td></tr>}
                         {users.map(u => (
                             <tr key={u._id}>
-                                <td style={{ fontWeight: 600 }}>{u.name}</td>
-                                <td style={{ color: 'var(--text-muted)' }}>{u.email}</td>
+                                <td className="cell-title">{u.name}</td>
+                                <td className="cell-muted">{u.email}</td>
                                 <td>{subBadge(u)}</td>
-                                <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                                <td className="cell-muted-sm">
                                     {new Date(u.createdAt).toLocaleDateString('es')}
                                 </td>
-                                <td style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>
+                                <td className="cell-muted-sm">
                                     {u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('es') : '—'}
                                 </td>
                                 <td>
@@ -124,7 +124,7 @@ export default function AdminUsers() {
             </div>
 
             {pages > 1 && (
-                <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: '1rem' }}>
+                <div className="pagination">
                     {Array.from({ length: pages }, (_, i) => (
                         <button
                             key={i}
@@ -139,7 +139,7 @@ export default function AdminUsers() {
 
             {selected && (
                 <AdminModal title={`Acceso — ${selected.name}`} onClose={() => setSelected(null)} wide>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div className="modal-sections">
 
                         {/* Suscripción global */}
                         <section>
@@ -178,10 +178,10 @@ export default function AdminUsers() {
                         {/* Acceso individual por curso */}
                         <section>
                             <p className="admin-section-label">Acceso por curso</p>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                            <div className="course-access-list">
                                 {courses.map(c => (
-                                    <div key={c._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <span style={{ fontSize: '0.875rem' }}>{c.title}</span>
+                                    <div key={c._id} className="course-access-row">
+                                        <span className="course-access-title">{c.title}</span>
                                         {hasAccess(c._id) ? (
                                             <button className="btn btn-danger btn-sm" onClick={() => revokeCourse(c._id)} disabled={saving}>
                                                 Revocar

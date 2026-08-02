@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import './LockedOverlay.css';
+import '../styles/LockedOverlay.css';
 
 export default function LockedOverlay() {
   const { user } = useAuth();

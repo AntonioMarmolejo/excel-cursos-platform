@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
             {stats.recentComments?.length > 0 && (
                 <>
-                    <p className="admin-section-label" style={{ marginBottom: '1rem' }}>Comentarios recientes</p>
+                    <p className="admin-section-label mb-1">Comentarios recientes</p>
                     <div className="admin-table-wrap">
                         <table className="admin-table">
                             <thead>
@@ -51,8 +51,8 @@ export default function AdminDashboard() {
                                 {stats.recentComments.map(c => (
                                     <tr key={c._id}>
                                         <td>{c.user?.name || '—'}</td>
-                                        <td style={{ color: 'var(--text-muted)' }}>{c.video?.title || '—'}</td>
-                                        <td style={{ color: 'var(--text-muted)', maxWidth: 300 }}>
+                                        <td className="cell-muted">{c.video?.title || '—'}</td>
+                                        <td className="cell-note">
                                             {c.content?.slice(0, 80)}{c.content?.length > 80 ? '…' : ''}
                                         </td>
                                     </tr>

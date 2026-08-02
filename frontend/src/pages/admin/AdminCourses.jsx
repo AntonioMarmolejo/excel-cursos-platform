@@ -88,7 +88,7 @@ export default function AdminCourses() {
                         {courses.map(c => (
                             <tr key={c._id}>
                                 <td>{c.order}</td>
-                                <td style={{ fontWeight: 600 }}>{c.title}</td>
+                                <td className="cell-title">{c.title}</td>
                                 <td><span className="badge badge-gray">{c.level}</span></td>
                                 <td>${c.price?.lifetime?.toFixed(2)}</td>
                                 <td>{c.totalVideos}</td>
@@ -98,7 +98,7 @@ export default function AdminCourses() {
                                     </span>
                                 </td>
                                 <td>
-                                    <div style={{ display: 'flex', gap: 6 }}>
+                                    <div className="row-actions">
                                         <Link to={`/admin/cursos/${c._id}/videos`} className="btn btn-outline btn-sm">
                                             Videos
                                         </Link>

@@ -1,4 +1,4 @@
-import './VideoList.css';
+import '../styles/VideoList.css';
 
 function formatDuration(seconds) {
   if (!seconds) return '';

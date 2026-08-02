@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import './VideoPlayer.css';
+import '../styles/VideoPlayer.css';
 
 let playerjsPromise = null;
 function loadPlayerJs() {

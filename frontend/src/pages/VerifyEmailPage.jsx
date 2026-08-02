@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/client';
-import './AuthPage.css';
+import '../styles/AuthPage.css';
 
 export default function VerifyEmailPage() {
   const { token } = useParams();
@@ -23,7 +23,7 @@ export default function VerifyEmailPage() {
 
         <div className="auth-form">
           {status === 'loading' && (
-            <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+            <p className="auth-status">
               Verificando tu cuenta...
             </p>
           )}

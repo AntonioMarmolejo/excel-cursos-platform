@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
-import './HomePage.css';
+import '../styles/HomePage.css';
 
 const LEVEL_LABEL = { basico: 'Básico', medio: 'Intermedio', avanzado: 'Avanzado' };
 

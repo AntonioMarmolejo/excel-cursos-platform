@@ -92,15 +92,15 @@ export default function AdminVideos() {
                         {videos.map(v => (
                             <tr key={v._id}>
                                 <td>{v.order}</td>
-                                <td style={{ fontWeight: 600 }}>{v.title}</td>
-                                <td style={{ color: 'var(--text-muted)', fontSize: '0.78rem', fontFamily: 'monospace' }}>
+                                <td className="cell-title">{v.title}</td>
+                                <td className="cell-mono">
                                     {v.bunnyVideoId?.slice(0, 18)}…
                                 </td>
                                 <td>{v.duration > 0 ? fmtSecs(v.duration) : '—'}</td>
                                 <td><span className={`badge ${v.isFree ? 'badge-green' : 'badge-gray'}`}>{v.isFree ? 'Sí' : 'No'}</span></td>
                                 <td><span className={`badge ${v.isPublished ? 'badge-green' : 'badge-yellow'}`}>{v.isPublished ? 'Publicado' : 'Borrador'}</span></td>
                                 <td>
-                                    <div style={{ display: 'flex', gap: 6 }}>
+                                    <div className="row-actions">
                                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(v)}>Editar</button>
                                         <button className="btn btn-danger btn-sm" onClick={() => handleDelete(v._id)}>Borrar</button>
                                     </div>

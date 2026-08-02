@@ -393,6 +393,28 @@
     margin: 0;
 }
 
+/* ─── Cell & layout helpers ─── */
+.cell-title { font-weight: 600; }
+.cell-muted { color: var(--text-muted); }
+.cell-muted-xs { color: var(--text-muted); font-size: 0.75rem; }
+.cell-muted-sm { color: var(--text-muted); font-size: 0.8rem; }
+.cell-muted-md { color: var(--text-muted); font-size: 0.85rem; }
+.cell-mono { color: var(--text-muted); font-size: 0.78rem; font-family: monospace; }
+.cell-comment { max-width: 320px; color: var(--text-muted); font-size: 0.85rem; }
+.cell-note { color: var(--text-muted); max-width: 300px; }
+.cell-date { font-size: 0.8rem; color: var(--text-muted); white-space: nowrap; }
+
+.row-actions { display: flex; gap: 6px; }
+.header-actions { display: flex; gap: 8px; }
+.pagination { display: flex; gap: 6px; justify-content: center; margin-top: 1rem; }
+
+.modal-sections { display: flex; flex-direction: column; gap: 1.5rem; }
+.course-access-list { display: flex; flex-direction: column; gap: 10px; }
+.course-access-row { display: flex; justify-content: space-between; align-items: center; }
+.course-access-title { font-size: 0.875rem; }
+
+.mb-1 { margin-bottom: 1rem; }
+
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
     .admin-layout { flex-direction: column; }

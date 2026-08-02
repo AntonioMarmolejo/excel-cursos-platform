@@ -1,6 +1,6 @@
 import { NavLink, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import './admin.css';
+import '../../styles/admin.css';
 
 const NAV = [
     { to: '/admin',             label: 'Dashboard',    icon: '📊', end: true },

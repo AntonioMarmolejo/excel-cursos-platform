@@ -24,7 +24,7 @@ export default function AdminComments() {
         <>
             <div className="admin-page-header">
                 <h1 className="admin-page-title">Comentarios</h1>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <div className="header-actions">
                     <button
                         className={`btn btn-sm ${!showHidden ? 'btn-primary' : 'btn-outline'}`}
                         onClick={() => switchTab(false)}
@@ -54,16 +54,16 @@ export default function AdminComments() {
                         {comments.map(c => (
                             <tr key={c._id}>
                                 <td>
-                                    <div style={{ fontWeight: 600 }}>{c.user?.name}</div>
-                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{c.user?.email}</div>
+                                    <div className="cell-title">{c.user?.name}</div>
+                                    <div className="cell-muted-xs">{c.user?.email}</div>
                                 </td>
-                                <td style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                <td className="cell-muted-md">
                                     {c.video?.title || '—'}
                                 </td>
-                                <td style={{ maxWidth: 320, color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                                <td className="cell-comment">
                                     {c.content?.slice(0, 100)}{c.content?.length > 100 ? '…' : ''}
                                 </td>
-                                <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
+                                <td className="cell-date">
                                     {new Date(c.createdAt).toLocaleDateString('es')}
                                 </td>
                                 <td>
