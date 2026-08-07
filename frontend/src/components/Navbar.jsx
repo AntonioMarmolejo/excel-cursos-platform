@@ -10,6 +10,9 @@ export default function Navbar() {
             <Link to="/" className="navbar-logo">Cursos de Excel</Link>
             {user && (
                 <div className="navbar-user">
+                    {user.role === 'admin' && (
+                        <Link to="/admin" className="navbar-admin-link">Panel Admin</Link>
+                    )}
                     <span className="navbar-name">{user.name}</span>
                     <button className="navbar-logout" onClick={logout}>Cerrar sesión</button>
                 </div>

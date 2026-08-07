@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 import VideoPlayer from '../components/VideoPlayer';
 import VideoList from '../components/VideoList';
 import LockedOverlay from '../components/LockedOverlay';
@@ -89,6 +90,8 @@ export default function CoursePage() {
 
   return (
     <div className="course-page">
+      <Navbar />
+
       {/* Header */}
       <header className="course-header">
         {course.thumbnail && (
