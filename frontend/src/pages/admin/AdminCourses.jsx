@@ -68,13 +68,13 @@ export default function AdminCourses() {
 
     return (
         <>
-            <div className="admin-page-header">
-                <h1 className="admin-page-title">Cursos</h1>
-                <button className="btn btn-primary" onClick={openCreate}>+ Nuevo curso</button>
+            <div className="admin-page__header">
+                <h1 className="admin-page__title">Cursos</h1>
+                <button className="btn btn--primary" onClick={openCreate}>+ Nuevo curso</button>
             </div>
 
-            <div className="admin-table-wrap">
-                <table className="admin-table">
+            <div className="admin-table">
+                <table className="admin-table__table">
                     <thead>
                         <tr>
                             <th>#</th><th>Título</th><th>Nivel</th>
@@ -88,22 +88,22 @@ export default function AdminCourses() {
                         {courses.map(c => (
                             <tr key={c._id}>
                                 <td>{c.order}</td>
-                                <td className="cell-title">{c.title}</td>
-                                <td><span className="badge badge-gray">{c.level}</span></td>
+                                <td className="admin-table__cell--title">{c.title}</td>
+                                <td><span className="badge badge--gray">{c.level}</span></td>
                                 <td>${c.price?.lifetime?.toFixed(2)}</td>
                                 <td>{c.totalVideos}</td>
                                 <td>
-                                    <span className={`badge ${c.isPublished ? 'badge-green' : 'badge-yellow'}`}>
+                                    <span className={`badge ${c.isPublished ? 'badge--green' : 'badge--yellow'}`}>
                                         {c.isPublished ? 'Publicado' : 'Borrador'}
                                     </span>
                                 </td>
                                 <td>
-                                    <div className="row-actions">
-                                        <Link to={`/admin/cursos/${c._id}/videos`} className="btn btn-outline btn-sm">
+                                    <div className="admin-table__row-actions">
+                                        <Link to={`/admin/cursos/${c._id}/videos`} className="btn btn--outline btn--sm">
                                             Videos
                                         </Link>
-                                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(c)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(c._id)}>Borrar</button>
+                                        <button className="btn btn--outline btn--sm" onClick={() => openEdit(c)}>Editar</button>
+                                        <button className="btn btn--danger btn--sm" onClick={() => handleDelete(c._id)}>Borrar</button>
                                     </div>
                                 </td>
                             </tr>
@@ -115,26 +115,26 @@ export default function AdminCourses() {
             {editing !== null && (
                 <AdminModal title={editing._id ? 'Editar curso' : 'Nuevo curso'} onClose={() => setEditing(null)} wide>
                     <form className="admin-form" onSubmit={handleSubmit}>
-                        {error && <div className="admin-error">{error}</div>}
+                        {error && <div className="admin-form__error">{error}</div>}
 
-                        <div className="admin-field-row">
-                            <div className="admin-field">
+                        <div className="admin-form__field-row">
+                            <div className="admin-form__field">
                                 <label>Título *</label>
                                 <input name="title" value={form.title} onChange={handleChange} required />
                             </div>
-                            <div className="admin-field">
+                            <div className="admin-form__field">
                                 <label>Slug *</label>
                                 <input name="slug" value={form.slug} onChange={handleChange} required placeholder="excel-basico" />
                             </div>
                         </div>
 
-                        <div className="admin-field">
+                        <div className="admin-form__field">
                             <label>Descripción *</label>
                             <textarea name="description" value={form.description} onChange={handleChange} required />
                         </div>
 
-                        <div className="admin-field-row">
-                            <div className="admin-field">
+                        <div className="admin-form__field-row">
+                            <div className="admin-form__field">
                                 <label>Nivel</label>
                                 <select name="level" value={form.level} onChange={handleChange}>
                                     <option value="basico">Básico</option>
@@ -142,36 +142,36 @@ export default function AdminCourses() {
                                     <option value="avanzado">Avanzado</option>
                                 </select>
                             </div>
-                            <div className="admin-field">
+                            <div className="admin-form__field">
                                 <label>Precio lifetime ($)</label>
                                 <input type="number" name="priceLifetime" value={form.priceLifetime} onChange={handleChange} min={0} step={0.01} />
                             </div>
                         </div>
 
-                        <div className="admin-field-row">
-                            <div className="admin-field">
+                        <div className="admin-form__field-row">
+                            <div className="admin-form__field">
                                 <label>Orden</label>
                                 <input type="number" name="order" value={form.order} onChange={handleChange} min={0} />
                             </div>
-                            <div className="admin-field">
+                            <div className="admin-form__field">
                                 <label>Instructor</label>
                                 <input name="instructorName" value={form.instructorName} onChange={handleChange} />
                             </div>
                         </div>
 
-                        <div className="admin-field">
+                        <div className="admin-form__field">
                             <label>URL thumbnail</label>
                             <input name="thumbnail" value={form.thumbnail} onChange={handleChange} placeholder="https://..." />
                         </div>
 
-                        <div className="admin-field admin-field-check">
+                        <div className="admin-form__field admin-form__field--check">
                             <input type="checkbox" name="isPublished" id="chk-published" checked={form.isPublished} onChange={handleChange} />
                             <label htmlFor="chk-published">Publicado</label>
                         </div>
 
-                        <div className="admin-form-actions">
-                            <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>Cancelar</button>
-                            <button type="submit" className="btn btn-primary" disabled={saving}>
+                        <div className="admin-form__actions">
+                            <button type="button" className="btn btn--outline" onClick={() => setEditing(null)}>Cancelar</button>
+                            <button type="submit" className="btn btn--primary" disabled={saving}>
                                 {saving ? 'Guardando…' : 'Guardar'}
                             </button>
                         </div>

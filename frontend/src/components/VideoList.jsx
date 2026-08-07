@@ -10,49 +10,49 @@ function formatDuration(seconds) {
 export default function VideoList({ videos, selectedId, onSelect, progress }) {
   return (
     <aside className="video-list">
-      <div className="video-list-header">
+      <div className="video-list__header">
         <span>Contenido del curso</span>
-        <span className="video-count">{videos.length} videos</span>
+        <span className="video-list__count">{videos.length} videos</span>
       </div>
 
       {progress > 0 && (
-        <div className="course-progress">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progress}%` }} />
+        <div className="video-list__progress">
+          <div className="video-list__progress-bar">
+            <div className="video-list__progress-fill" style={{ width: `${progress}%` }} />
           </div>
-          <span className="progress-label">{Math.round(progress)}% completado</span>
+          <span className="video-list__progress-label">{Math.round(progress)}% completado</span>
         </div>
       )}
 
-      <ul className="video-items">
+      <ul className="video-list__items">
         {videos.map((video) => (
           <li
             key={video._id}
             className={[
-              'video-item',
-              selectedId === video._id ? 'video-item--active' : '',
-              video.locked ? 'video-item--locked' : '',
+              'video-list__item',
+              selectedId === video._id ? 'video-list__item--active' : '',
+              video.locked ? 'video-list__item--locked' : '',
             ].join(' ')}
             onClick={() => onSelect(video)}
           >
-            <div className="video-item-icon">
+            <div className="video-list__item-icon">
               {video.completed ? (
-                <span className="icon-done">✓</span>
+                <span className="video-list__icon video-list__icon--done">✓</span>
               ) : video.locked ? (
-                <span className="icon-lock">🔒</span>
+                <span className="video-list__icon video-list__icon--lock">🔒</span>
               ) : (
-                <span className="icon-play">▶</span>
+                <span className="video-list__icon video-list__icon--play">▶</span>
               )}
             </div>
 
-            <div className="video-item-info">
-              <span className="video-item-title">{video.title}</span>
-              <div className="video-item-meta">
+            <div className="video-list__item-info">
+              <span className="video-list__item-title">{video.title}</span>
+              <div className="video-list__item-meta">
                 {video.isFree && !video.locked && (
-                  <span className="badge-free">Gratis</span>
+                  <span className="video-list__badge">Gratis</span>
                 )}
                 {video.duration > 0 && (
-                  <span className="video-duration">{formatDuration(video.duration)}</span>
+                  <span className="video-list__duration">{formatDuration(video.duration)}</span>
                 )}
               </div>
             </div>

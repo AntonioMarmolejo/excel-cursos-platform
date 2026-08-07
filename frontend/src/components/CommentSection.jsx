@@ -58,21 +58,22 @@ export default function CommentSection({ videoId, courseId }) {
 
     return (
         <div className="comment-section">
-            <h3 className="comment-section-title">
-                Comentarios {comments.length > 0 && <span className="comment-count">({comments.length})</span>}
+            <h3 className="comment-section__title">
+                Comentarios {comments.length > 0 && <span className="comment-section__count">({comments.length})</span>}
             </h3>
 
-            <form className="comment-form" onSubmit={handleSubmit}>
-                <div className="comment-avatar">{user?.name?.[0]?.toUpperCase() || '?'}</div>
-                <div className="comment-form-body">
+            <form className="comment-section__form" onSubmit={handleSubmit}>
+                <div className="comment__avatar">{user?.name?.[0]?.toUpperCase() || '?'}</div>
+                <div className="comment-section__form-body">
                     <textarea
+                        className="comment-section__textarea"
                         placeholder="Escribe un comentario o pregunta sobre este video..."
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         maxLength={1000}
                     />
-                    <div className="comment-form-actions">
-                        <button type="submit" className="comment-btn comment-btn-primary" disabled={posting || !content.trim()}>
+                    <div className="comment-section__form-actions">
+                        <button type="submit" className="comment-btn comment-btn--primary" disabled={posting || !content.trim()}>
                             {posting ? 'Publicando…' : 'Comentar'}
                         </button>
                     </div>
@@ -80,41 +81,41 @@ export default function CommentSection({ videoId, courseId }) {
             </form>
 
             {loading ? (
-                <p className="comment-empty">Cargando comentarios...</p>
+                <p className="comment-section__empty">Cargando comentarios...</p>
             ) : comments.length === 0 ? (
-                <p className="comment-empty">Sé el primero en comentar este video.</p>
+                <p className="comment-section__empty">Sé el primero en comentar este video.</p>
             ) : (
-                <ul className="comment-list">
+                <ul className="comment-section__list">
                     {comments.map(c => (
-                        <li key={c._id} className="comment-item">
-                            <div className="comment-avatar">{c.user?.name?.[0]?.toUpperCase() || '?'}</div>
-                            <div className="comment-body">
-                                <div className="comment-meta">
-                                    <span className="comment-author">{c.user?.name || 'Usuario'}</span>
-                                    <span className="comment-date">{fmtDate(c.createdAt)}</span>
+                        <li key={c._id} className="comment">
+                            <div className="comment__avatar">{c.user?.name?.[0]?.toUpperCase() || '?'}</div>
+                            <div className="comment__body">
+                                <div className="comment__meta">
+                                    <span className="comment__author">{c.user?.name || 'Usuario'}</span>
+                                    <span className="comment__date">{fmtDate(c.createdAt)}</span>
                                 </div>
-                                <p className="comment-text">{c.content}</p>
+                                <p className="comment__text">{c.content}</p>
                                 <button
-                                    className="comment-reply-btn"
+                                    className="comment__reply-btn"
                                     onClick={() => setReplyingTo(replyingTo === c._id ? null : c._id)}
                                 >
                                     Responder
                                 </button>
 
                                 {c.replies?.length > 0 && (
-                                    <ul className="comment-replies">
+                                    <ul className="comment__replies">
                                         {c.replies.map((r, i) => (
-                                            <li key={r._id || i} className="comment-reply">
-                                                <div className="comment-avatar comment-avatar-sm">
+                                            <li key={r._id || i} className="comment comment--reply">
+                                                <div className="comment__avatar comment__avatar--sm">
                                                     {r.user?.name?.[0]?.toUpperCase() || '?'}
                                                 </div>
-                                                <div className="comment-body">
-                                                    <div className="comment-meta">
-                                                        <span className="comment-author">{r.user?.name || 'Usuario'}</span>
-                                                        {r.isAdminReply && <span className="comment-badge">Instructor</span>}
-                                                        <span className="comment-date">{fmtDate(r.createdAt)}</span>
+                                                <div className="comment__body">
+                                                    <div className="comment__meta">
+                                                        <span className="comment__author">{r.user?.name || 'Usuario'}</span>
+                                                        {r.isAdminReply && <span className="comment__badge">Instructor</span>}
+                                                        <span className="comment__date">{fmtDate(r.createdAt)}</span>
                                                     </div>
-                                                    <p className="comment-text">{r.content}</p>
+                                                    <p className="comment__text">{r.content}</p>
                                                 </div>
                                             </li>
                                         ))}
@@ -122,23 +123,24 @@ export default function CommentSection({ videoId, courseId }) {
                                 )}
 
                                 {replyingTo === c._id && (
-                                    <div className="comment-reply-form">
+                                    <div className="comment__reply-form">
                                         <textarea
+                                            className="comment-section__textarea"
                                             placeholder="Escribe una respuesta..."
                                             value={replyContent}
                                             onChange={e => setReplyContent(e.target.value)}
                                             maxLength={1000}
                                             autoFocus
                                         />
-                                        <div className="comment-form-actions">
+                                        <div className="comment__reply-actions">
                                             <button
-                                                className="comment-btn comment-btn-outline"
+                                                className="comment-btn comment-btn--outline"
                                                 onClick={() => { setReplyingTo(null); setReplyContent(''); }}
                                             >
                                                 Cancelar
                                             </button>
                                             <button
-                                                className="comment-btn comment-btn-primary"
+                                                className="comment-btn comment-btn--primary"
                                                 disabled={replying || !replyContent.trim()}
                                                 onClick={() => handleReply(c._id)}
                                             >

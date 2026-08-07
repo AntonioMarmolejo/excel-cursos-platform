@@ -14,32 +14,32 @@ export default function AdminLayout() {
 
     return (
         <div className="admin-layout">
-            <aside className="admin-sidebar">
-                <Link to="/admin" className="admin-sidebar-logo">
+            <aside className="admin-layout__sidebar">
+                <Link to="/admin" className="admin-layout__sidebar-logo">
                     Panel Admin
                     <span>Cursos de Excel</span>
                 </Link>
 
-                <nav className="admin-nav">
+                <nav className="admin-layout__nav">
                     {NAV.map(({ to, label, icon, end }) => (
                         <NavLink
                             key={to}
                             to={to}
                             end={end}
-                            className={({ isActive }) => `admin-nav-link${isActive ? ' active' : ''}`}
+                            className={({ isActive }) => `admin-layout__nav-link${isActive ? ' admin-layout__nav-link--active' : ''}`}
                         >
                             <span>{icon}</span> {label}
                         </NavLink>
                     ))}
                 </nav>
 
-                <div className="admin-sidebar-footer">
-                    <Link to="/" className="admin-sidebar-back">← Ver sitio</Link>
-                    <button className="admin-logout-btn" onClick={logout}>Cerrar sesión</button>
+                <div className="admin-layout__sidebar-footer">
+                    <Link to="/" className="admin-layout__sidebar-back">← Ver sitio</Link>
+                    <button className="admin-layout__logout-btn" onClick={logout}>Cerrar sesión</button>
                 </div>
             </aside>
 
-            <main className="admin-content">
+            <main className="admin-layout__content">
                 <Outlet />
             </main>
         </div>

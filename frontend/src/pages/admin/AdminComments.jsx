@@ -22,17 +22,17 @@ export default function AdminComments() {
 
     return (
         <>
-            <div className="admin-page-header">
-                <h1 className="admin-page-title">Comentarios</h1>
-                <div className="header-actions">
+            <div className="admin-page__header">
+                <h1 className="admin-page__title">Comentarios</h1>
+                <div className="admin-page__header-actions">
                     <button
-                        className={`btn btn-sm ${!showHidden ? 'btn-primary' : 'btn-outline'}`}
+                        className={`btn btn--sm ${!showHidden ? 'btn--primary' : 'btn--outline'}`}
                         onClick={() => switchTab(false)}
                     >
                         Visibles {!showHidden && `(${total})`}
                     </button>
                     <button
-                        className={`btn btn-sm ${showHidden ? 'btn-primary' : 'btn-outline'}`}
+                        className={`btn btn--sm ${showHidden ? 'btn--primary' : 'btn--outline'}`}
                         onClick={() => switchTab(true)}
                     >
                         Ocultos {showHidden && `(${total})`}
@@ -40,8 +40,8 @@ export default function AdminComments() {
                 </div>
             </div>
 
-            <div className="admin-table-wrap">
-                <table className="admin-table">
+            <div className="admin-table">
+                <table className="admin-table__table">
                     <thead>
                         <tr>
                             <th>Usuario</th><th>Video</th><th>Comentario</th><th>Fecha</th><th>Acción</th>
@@ -54,21 +54,21 @@ export default function AdminComments() {
                         {comments.map(c => (
                             <tr key={c._id}>
                                 <td>
-                                    <div className="cell-title">{c.user?.name}</div>
-                                    <div className="cell-muted-xs">{c.user?.email}</div>
+                                    <div className="admin-table__cell--title">{c.user?.name}</div>
+                                    <div className="admin-table__cell--muted-xs">{c.user?.email}</div>
                                 </td>
-                                <td className="cell-muted-md">
+                                <td className="admin-table__cell--muted-md">
                                     {c.video?.title || '—'}
                                 </td>
-                                <td className="cell-comment">
+                                <td className="admin-table__cell--comment">
                                     {c.content?.slice(0, 100)}{c.content?.length > 100 ? '…' : ''}
                                 </td>
-                                <td className="cell-date">
+                                <td className="admin-table__cell--date">
                                     {new Date(c.createdAt).toLocaleDateString('es')}
                                 </td>
                                 <td>
                                     <button
-                                        className={`btn btn-sm ${c.isHidden ? 'btn-outline' : 'btn-danger'}`}
+                                        className={`btn btn--sm ${c.isHidden ? 'btn--outline' : 'btn--danger'}`}
                                         onClick={() => toggle(c._id)}
                                     >
                                         {c.isHidden ? 'Mostrar' : 'Ocultar'}

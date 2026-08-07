@@ -68,17 +68,17 @@ export default function AdminVideos() {
 
     return (
         <>
-            <div className="admin-breadcrumb">
+            <div className="admin-page__breadcrumb">
                 <Link to="/admin/cursos">Cursos</Link> / {courseName || '…'}
             </div>
 
-            <div className="admin-page-header">
-                <h1 className="admin-page-title">Videos del curso</h1>
-                <button className="btn btn-primary" onClick={openCreate}>+ Nuevo video</button>
+            <div className="admin-page__header">
+                <h1 className="admin-page__title">Videos del curso</h1>
+                <button className="btn btn--primary" onClick={openCreate}>+ Nuevo video</button>
             </div>
 
-            <div className="admin-table-wrap">
-                <table className="admin-table">
+            <div className="admin-table">
+                <table className="admin-table__table">
                     <thead>
                         <tr>
                             <th>#</th><th>Título</th><th>Bunny ID</th>
@@ -92,17 +92,17 @@ export default function AdminVideos() {
                         {videos.map(v => (
                             <tr key={v._id}>
                                 <td>{v.order}</td>
-                                <td className="cell-title">{v.title}</td>
-                                <td className="cell-mono">
+                                <td className="admin-table__cell--title">{v.title}</td>
+                                <td className="admin-table__cell--mono">
                                     {v.bunnyVideoId?.slice(0, 18)}…
                                 </td>
                                 <td>{v.duration > 0 ? fmtSecs(v.duration) : '—'}</td>
-                                <td><span className={`badge ${v.isFree ? 'badge-green' : 'badge-gray'}`}>{v.isFree ? 'Sí' : 'No'}</span></td>
-                                <td><span className={`badge ${v.isPublished ? 'badge-green' : 'badge-yellow'}`}>{v.isPublished ? 'Publicado' : 'Borrador'}</span></td>
+                                <td><span className={`badge ${v.isFree ? 'badge--green' : 'badge--gray'}`}>{v.isFree ? 'Sí' : 'No'}</span></td>
+                                <td><span className={`badge ${v.isPublished ? 'badge--green' : 'badge--yellow'}`}>{v.isPublished ? 'Publicado' : 'Borrador'}</span></td>
                                 <td>
-                                    <div className="row-actions">
-                                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(v)}>Editar</button>
-                                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(v._id)}>Borrar</button>
+                                    <div className="admin-table__row-actions">
+                                        <button className="btn btn--outline btn--sm" onClick={() => openEdit(v)}>Editar</button>
+                                        <button className="btn btn--danger btn--sm" onClick={() => handleDelete(v._id)}>Borrar</button>
                                     </div>
                                 </td>
                             </tr>
@@ -114,42 +114,42 @@ export default function AdminVideos() {
             {editing !== null && (
                 <AdminModal title={editing._id ? 'Editar video' : 'Nuevo video'} onClose={() => setEditing(null)}>
                     <form className="admin-form" onSubmit={handleSubmit}>
-                        {error && <div className="admin-error">{error}</div>}
+                        {error && <div className="admin-form__error">{error}</div>}
 
-                        <div className="admin-field">
+                        <div className="admin-form__field">
                             <label>Título *</label>
                             <input name="title" value={form.title} onChange={handleChange} required />
                         </div>
 
-                        <div className="admin-field">
+                        <div className="admin-form__field">
                             <label>Descripción</label>
                             <textarea name="description" value={form.description} onChange={handleChange} />
                         </div>
 
-                        <div className="admin-field">
+                        <div className="admin-form__field">
                             <label>Bunny Video ID *</label>
                             <input name="bunnyVideoId" value={form.bunnyVideoId} onChange={handleChange} required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
                         </div>
 
-                        <div className="admin-field-row">
-                            <div className="admin-field">
+                        <div className="admin-form__field-row">
+                            <div className="admin-form__field">
                                 <label>Orden *</label>
                                 <input type="number" name="order" value={form.order} onChange={handleChange} min={1} required />
                             </div>
-                            <div className="admin-field">
+                            <div className="admin-form__field">
                                 <label>Duración (segundos)</label>
                                 <input type="number" name="duration" value={form.duration} onChange={handleChange} min={0} />
                             </div>
                         </div>
 
-                        <div className="admin-field admin-field-check">
+                        <div className="admin-form__field admin-form__field--check">
                             <input type="checkbox" name="isPublished" id="chk-vid-pub" checked={form.isPublished} onChange={handleChange} />
                             <label htmlFor="chk-vid-pub">Publicado</label>
                         </div>
 
-                        <div className="admin-form-actions">
-                            <button type="button" className="btn btn-outline" onClick={() => setEditing(null)}>Cancelar</button>
-                            <button type="submit" className="btn btn-primary" disabled={saving}>
+                        <div className="admin-form__actions">
+                            <button type="button" className="btn btn--outline" onClick={() => setEditing(null)}>Cancelar</button>
+                            <button type="submit" className="btn btn--primary" disabled={saving}>
                                 {saving ? 'Guardando…' : 'Guardar'}
                             </button>
                         </div>

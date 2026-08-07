@@ -21,24 +21,24 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
+      <div className="auth-page__card">
+        <div className="auth-page__logo">
           <h1>Cursos de Excel</h1>
           <p>Recupera tu contraseña</p>
         </div>
 
         {sent ? (
-          <div className="auth-form">
-            <div className="auth-success">
+          <div className="auth-page__form">
+            <div className="auth-page__success">
               Si el correo está registrado, recibirás un enlace para restablecer tu contraseña en los próximos minutos.
             </div>
-            <div className="auth-links">
+            <div className="auth-page__links">
               <Link to="/login">Volver al inicio de sesión</Link>
             </div>
           </div>
         ) : (
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
+          <form className="auth-page__form" onSubmit={handleSubmit}>
+            <div className="auth-page__group">
               <label htmlFor="email">Correo electrónico</label>
               <input
                 id="email"
@@ -51,11 +51,11 @@ export default function ForgotPasswordPage() {
               />
             </div>
 
-            <button type="submit" className="auth-btn" disabled={loading}>
+            <button type="submit" className="auth-page__btn" disabled={loading}>
               {loading ? 'Enviando...' : 'Enviar enlace'}
             </button>
 
-            <div className="auth-links">
+            <div className="auth-page__links">
               <Link to="/login">Volver al inicio de sesión</Link>
             </div>
           </form>

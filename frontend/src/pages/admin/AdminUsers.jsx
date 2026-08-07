@@ -72,8 +72,8 @@ export default function AdminUsers() {
 
     const subBadge = (u) => {
         const s = u.subscription;
-        if (!s?.plan) return <span className="badge badge-gray">Sin plan</span>;
-        const cls = s.status === 'active' ? 'badge-green' : s.status === 'cancelled' ? 'badge-red' : 'badge-yellow';
+        if (!s?.plan) return <span className="badge badge--gray">Sin plan</span>;
+        const cls = s.status === 'active' ? 'badge--green' : s.status === 'cancelled' ? 'badge--red' : 'badge--yellow';
         return <span className={`badge ${cls}`}>{s.plan} · {s.status}</span>;
     };
 
@@ -86,13 +86,13 @@ export default function AdminUsers() {
 
     return (
         <>
-            <div className="admin-page-header">
-                <h1 className="admin-page-title">Usuarios</h1>
+            <div className="admin-page__header">
+                <h1 className="admin-page__title">Usuarios</h1>
                 <input className="admin-search" placeholder="Buscar por nombre o email…" value={search} onChange={handleSearch} />
             </div>
 
-            <div className="admin-table-wrap">
-                <table className="admin-table">
+            <div className="admin-table">
+                <table className="admin-table__table">
                     <thead>
                         <tr>
                             <th>Nombre</th><th>Email</th><th>Suscripción</th>
@@ -103,17 +103,17 @@ export default function AdminUsers() {
                         {users.length === 0 && <tr><td colSpan={6} className="admin-empty">No hay usuarios</td></tr>}
                         {users.map(u => (
                             <tr key={u._id}>
-                                <td className="cell-title">{u.name}</td>
-                                <td className="cell-muted">{u.email}</td>
+                                <td className="admin-table__cell--title">{u.name}</td>
+                                <td className="admin-table__cell--muted">{u.email}</td>
                                 <td>{subBadge(u)}</td>
-                                <td className="cell-muted-sm">
+                                <td className="admin-table__cell--muted-sm">
                                     {new Date(u.createdAt).toLocaleDateString('es')}
                                 </td>
-                                <td className="cell-muted-sm">
+                                <td className="admin-table__cell--muted-sm">
                                     {u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('es') : '—'}
                                 </td>
                                 <td>
-                                    <button className="btn btn-outline btn-sm" onClick={() => openAccess(u)}>
+                                    <button className="btn btn--outline btn--sm" onClick={() => openAccess(u)}>
                                         Acceso
                                     </button>
                                 </td>
@@ -128,7 +128,7 @@ export default function AdminUsers() {
                     {Array.from({ length: pages }, (_, i) => (
                         <button
                             key={i}
-                            className={`btn btn-sm ${i + 1 === page ? 'btn-primary' : 'btn-outline'}`}
+                            className={`btn btn--sm ${i + 1 === page ? 'btn--primary' : 'btn--outline'}`}
                             onClick={() => { setPage(i + 1); fetchUsers(search, i + 1); }}
                         >
                             {i + 1}
@@ -139,14 +139,14 @@ export default function AdminUsers() {
 
             {selected && (
                 <AdminModal title={`Acceso — ${selected.name}`} onClose={() => setSelected(null)} wide>
-                    <div className="modal-sections">
+                    <div className="modal__sections">
 
                         {/* Suscripción global */}
                         <section>
                             <p className="admin-section-label">Suscripción global</p>
                             <form className="admin-form" onSubmit={setSubscription}>
-                                <div className="admin-field-row">
-                                    <div className="admin-field">
+                                <div className="admin-form__field-row">
+                                    <div className="admin-form__field">
                                         <label>Plan</label>
                                         <select value={subForm.plan} onChange={e => setSubForm(p => ({ ...p, plan: e.target.value }))}>
                                             <option value="mensual">Mensual</option>
@@ -155,20 +155,20 @@ export default function AdminUsers() {
                                         </select>
                                     </div>
                                     {subForm.plan !== 'lifetime' && (
-                                        <div className="admin-field">
+                                        <div className="admin-form__field">
                                             <label>Expira</label>
                                             <input type="date" value={subForm.endDate}
                                                 onChange={e => setSubForm(p => ({ ...p, endDate: e.target.value }))} />
                                         </div>
                                     )}
                                 </div>
-                                <div className="admin-form-actions">
+                                <div className="admin-form__actions">
                                     {selected.subscription?.status === 'active' && (
-                                        <button type="button" className="btn btn-danger btn-sm" onClick={cancelSub}>
+                                        <button type="button" className="btn btn--danger btn--sm" onClick={cancelSub}>
                                             Cancelar suscripción
                                         </button>
                                     )}
-                                    <button type="submit" className="btn btn-primary" disabled={saving}>Activar</button>
+                                    <button type="submit" className="btn btn--primary" disabled={saving}>Activar</button>
                                 </div>
                             </form>
                         </section>
@@ -178,16 +178,16 @@ export default function AdminUsers() {
                         {/* Acceso individual por curso */}
                         <section>
                             <p className="admin-section-label">Acceso por curso</p>
-                            <div className="course-access-list">
+                            <div className="course-access">
                                 {courses.map(c => (
-                                    <div key={c._id} className="course-access-row">
-                                        <span className="course-access-title">{c.title}</span>
+                                    <div key={c._id} className="course-access__row">
+                                        <span className="course-access__title">{c.title}</span>
                                         {hasAccess(c._id) ? (
-                                            <button className="btn btn-danger btn-sm" onClick={() => revokeCourse(c._id)} disabled={saving}>
+                                            <button className="btn btn--danger btn--sm" onClick={() => revokeCourse(c._id)} disabled={saving}>
                                                 Revocar
                                             </button>
                                         ) : (
-                                            <button className="btn btn-outline btn-sm" onClick={() => grantCourse(c._id)} disabled={saving}>
+                                            <button className="btn btn--outline btn--sm" onClick={() => grantCourse(c._id)} disabled={saving}>
                                                 Dar acceso
                                             </button>
                                         )}

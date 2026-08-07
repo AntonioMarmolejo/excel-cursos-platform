@@ -12,34 +12,34 @@ export default function AdminDashboard() {
 
     return (
         <>
-            <div className="admin-page-header">
-                <h1 className="admin-page-title">Dashboard</h1>
+            <div className="admin-page__header">
+                <h1 className="admin-page__title">Dashboard</h1>
             </div>
 
             <div className="stat-grid">
                 <div className="stat-card">
-                    <div className="stat-card-label">Total usuarios</div>
-                    <div className="stat-card-value">{stats.totalUsers}</div>
+                    <div className="stat-card__label">Total usuarios</div>
+                    <div className="stat-card__value">{stats.totalUsers}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-card-label">Suscripciones activas</div>
-                    <div className="stat-card-value">{stats.activeSubscriptions}</div>
+                    <div className="stat-card__label">Suscripciones activas</div>
+                    <div className="stat-card__value">{stats.activeSubscriptions}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-card-label">Cursos publicados</div>
-                    <div className="stat-card-value">{stats.totalCourses}</div>
+                    <div className="stat-card__label">Cursos publicados</div>
+                    <div className="stat-card__value">{stats.totalCourses}</div>
                 </div>
                 <div className="stat-card">
-                    <div className="stat-card-label">Nuevos (30 días)</div>
-                    <div className="stat-card-value">{stats.newUsersLast30Days}</div>
+                    <div className="stat-card__label">Nuevos (30 días)</div>
+                    <div className="stat-card__value">{stats.newUsersLast30Days}</div>
                 </div>
             </div>
 
             {stats.recentComments?.length > 0 && (
                 <>
-                    <p className="admin-section-label mb-1">Comentarios recientes</p>
-                    <div className="admin-table-wrap">
-                        <table className="admin-table">
+                    <p className="admin-section-label u-mb-1">Comentarios recientes</p>
+                    <div className="admin-table">
+                        <table className="admin-table__table">
                             <thead>
                                 <tr>
                                     <th>Usuario</th>
@@ -51,8 +51,8 @@ export default function AdminDashboard() {
                                 {stats.recentComments.map(c => (
                                     <tr key={c._id}>
                                         <td>{c.user?.name || '—'}</td>
-                                        <td className="cell-muted">{c.video?.title || '—'}</td>
-                                        <td className="cell-note">
+                                        <td className="admin-table__cell--muted">{c.video?.title || '—'}</td>
+                                        <td className="admin-table__cell--note">
                                             {c.content?.slice(0, 80)}{c.content?.length > 80 ? '…' : ''}
                                         </td>
                                     </tr>

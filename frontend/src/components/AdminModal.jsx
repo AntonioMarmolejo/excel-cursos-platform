@@ -8,13 +8,13 @@ export default function AdminModal({ title, onClose, children, wide = false }) {
     }, [onClose]);
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className={`modal-box${wide ? ' modal-box--wide' : ''}`} onClick={e => e.stopPropagation()}>
-                <div className="modal-header">
-                    <h3 className="modal-title">{title}</h3>
-                    <button className="modal-close" onClick={onClose}>✕</button>
+        <div className="modal" onClick={onClose}>
+            <div className={`modal__box${wide ? ' modal__box--wide' : ''}`} onClick={e => e.stopPropagation()}>
+                <div className="modal__header">
+                    <h3 className="modal__title">{title}</h3>
+                    <button className="modal__close" onClick={onClose}>✕</button>
                 </div>
-                <div className="modal-body">{children}</div>
+                <div className="modal__body">{children}</div>
             </div>
         </div>
     );

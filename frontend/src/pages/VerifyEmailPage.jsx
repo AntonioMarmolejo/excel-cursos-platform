@@ -15,32 +15,32 @@ export default function VerifyEmailPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
+      <div className="auth-page__card">
+        <div className="auth-page__logo">
           <h1>Cursos de Excel</h1>
           <p>Verificación de cuenta</p>
         </div>
 
-        <div className="auth-form">
+        <div className="auth-page__form">
           {status === 'loading' && (
-            <p className="auth-status">
+            <p className="auth-page__status">
               Verificando tu cuenta...
             </p>
           )}
           {status === 'success' && (
             <>
-              <div className="auth-success">
+              <div className="auth-page__success">
                 Tu correo fue verificado correctamente. Ya puedes acceder a todos los cursos.
               </div>
-              <Link to="/login" className="auth-btn">Ir al inicio de sesión</Link>
+              <Link to="/login" className="auth-page__btn">Ir al inicio de sesión</Link>
             </>
           )}
           {status === 'error' && (
             <>
-              <div className="auth-error">
+              <div className="auth-page__error">
                 El enlace de verificación es inválido o ya fue usado.
               </div>
-              <Link to="/login" className="auth-btn">Ir al inicio de sesión</Link>
+              <Link to="/login" className="auth-page__btn">Ir al inicio de sesión</Link>
             </>
           )}
         </div>

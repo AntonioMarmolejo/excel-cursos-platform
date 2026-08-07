@@ -33,16 +33,16 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
+      <div className="auth-page__card">
+        <div className="auth-page__logo">
           <h1>Cursos de Excel</h1>
           <p>Crea una nueva contraseña</p>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {error && <div className="auth-error">{error}</div>}
+        <form className="auth-page__form" onSubmit={handleSubmit}>
+          {error && <div className="auth-page__error">{error}</div>}
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="password">Nueva contraseña</label>
             <input
               id="password"
@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="confirm">Confirmar contraseña</label>
             <input
               id="confirm"
@@ -70,7 +70,7 @@ export default function ResetPasswordPage() {
             />
           </div>
 
-          <button type="submit" className="auth-btn" disabled={loading}>
+          <button type="submit" className="auth-page__btn" disabled={loading}>
             {loading ? 'Guardando...' : 'Guardar contraseña'}
           </button>
         </form>

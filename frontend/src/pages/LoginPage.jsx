@@ -35,17 +35,17 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
+      <div className="auth-page__card">
+        <div className="auth-page__logo">
           <h1>Cursos de Excel</h1>
           <p>Inicia sesión para continuar</p>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {message && <div className="auth-success">{message}</div>}
-          {error && <div className="auth-error">{error}</div>}
+        <form className="auth-page__form" onSubmit={handleSubmit}>
+          {message && <div className="auth-page__success">{message}</div>}
+          {error && <div className="auth-page__error">{error}</div>}
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="email">Correo electrónico</label>
             <input
               id="email"
@@ -59,7 +59,7 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="password">Contraseña</label>
             <input
               id="password"
@@ -72,12 +72,12 @@ export default function LoginPage() {
             />
           </div>
 
-          <button type="submit" className="auth-btn" disabled={loading}>
+          <button type="submit" className="auth-page__btn" disabled={loading}>
             {loading ? 'Entrando...' : 'Iniciar sesión'}
           </button>
         </form>
 
-        <div className="auth-links">
+        <div className="auth-page__links">
           <Link to="/olvide-contrasena">¿Olvidaste tu contraseña?</Link>
           <span>¿No tienes cuenta? <Link to="/registro">Regístrate</Link></span>
         </div>

@@ -7,7 +7,7 @@
   background: var(--bg);
 }
 
-.auth-card {
+.auth-page__card {
   width: 100%;
   max-width: 420px;
   background: var(--surface);
@@ -16,42 +16,42 @@
   padding: 40px 36px;
 }
 
-.auth-logo {
+.auth-page__logo {
   text-align: center;
   margin-bottom: 32px;
 }
 
-.auth-logo h1 {
+.auth-page__logo h1 {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--primary);
 }
 
-.auth-logo p {
+.auth-page__logo p {
   color: var(--text-muted);
   font-size: 0.9rem;
   margin-top: 6px;
 }
 
-.auth-form {
+.auth-page__form {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.form-group {
+.auth-page__group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.form-group label {
+.auth-page__group label {
   font-size: 0.85rem;
   color: var(--text-muted);
   font-weight: 500;
 }
 
-.form-group input {
+.auth-page__group input {
   padding: 10px 14px;
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -62,11 +62,11 @@
   transition: border-color 0.2s;
 }
 
-.form-group input:focus {
+.auth-page__group input:focus {
   border-color: var(--primary);
 }
 
-.auth-btn {
+.auth-page__btn {
   display: block;
   margin-top: 8px;
   padding: 12px;
@@ -81,17 +81,17 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.auth-btn:hover:not(:disabled) {
+.auth-page__btn:hover:not(:disabled) {
   background: var(--primary-dark);
   color: #fff;
 }
 
-.auth-btn:disabled {
+.auth-page__btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.auth-error {
+.auth-page__error {
   padding: 10px 14px;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
@@ -100,7 +100,7 @@
   font-size: 0.875rem;
 }
 
-.auth-success {
+.auth-page__success {
   padding: 10px 14px;
   background: rgba(34, 197, 94, 0.1);
   border: 1px solid rgba(34, 197, 94, 0.3);
@@ -109,7 +109,7 @@
   font-size: 0.875rem;
 }
 
-.auth-links {
+.auth-page__links {
   margin-top: 24px;
   text-align: center;
   font-size: 0.875rem;
@@ -119,16 +119,16 @@
   gap: 8px;
 }
 
-.auth-links a {
+.auth-page__links a {
   color: var(--primary);
 }
 
-.auth-links a:hover {
+.auth-page__links a:hover {
   color: var(--primary-light);
   text-decoration: underline;
 }
 
-.auth-status {
+.auth-page__status {
   text-align: center;
   color: var(--text-muted);
 }

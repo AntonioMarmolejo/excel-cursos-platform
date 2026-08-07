@@ -82,8 +82,8 @@ export default function CoursePage() {
     else if (video.locked) setSelected(video); // muestra el overlay
   };
 
-  if (loadingCourse) return <div className="page-loading"><div className="spinner" /></div>;
-  if (error)         return <div className="page-error">{error} <button onClick={() => navigate('/')}>Volver</button></div>;
+  if (loadingCourse) return <div className="course-page__loading"><div className="course-page__spinner" /></div>;
+  if (error)         return <div className="course-page__error">{error} <button onClick={() => navigate('/')}>Volver</button></div>;
 
   const showLocked  = selectedVideo?.locked;
   const showLogin   = !user && selectedVideo && !selectedVideo.locked;
@@ -93,20 +93,20 @@ export default function CoursePage() {
       <Navbar />
 
       {/* Header */}
-      <header className="course-header">
+      <header className="course-page__header">
         {course.thumbnail && (
-          <div className="course-header-bg" style={{ backgroundImage: `url(${course.thumbnail})` }} />
+          <div className="course-page__header-bg" style={{ backgroundImage: `url(${course.thumbnail})` }} />
         )}
-        <div className="course-header-content">
-          <button className="back-btn" onClick={() => navigate('/')}>← Cursos</button>
-          <div className="course-meta">
-            <span className="course-level">{course.level}</span>
+        <div className="course-page__header-content">
+          <button className="course-page__back-btn" onClick={() => navigate('/')}>← Cursos</button>
+          <div className="course-page__meta">
+            <span className="course-page__level">{course.level}</span>
           </div>
-          <h1 className="course-title">{course.title}</h1>
+          <h1 className="course-page__title">{course.title}</h1>
           {course.instructor?.name && (
-            <p className="course-instructor">Por {course.instructor.name}</p>
+            <p className="course-page__instructor">Por {course.instructor.name}</p>
           )}
-          <div className="course-stats">
+          <div className="course-page__stats">
             <span>{course.totalVideos} videos</span>
             {course.totalDuration > 0 && (
               <span>{Math.round(course.totalDuration / 60)} min</span>
@@ -116,12 +116,12 @@ export default function CoursePage() {
       </header>
 
       {/* Main layout */}
-      <div className="course-body">
-        <main className="course-main">
+      <div className="course-page__body">
+        <main className="course-page__main">
           {/* Player area */}
-          <div className="player-area">
+          <div className="course-page__player">
             {loadingStream ? (
-              <div className="player-loading"><div className="spinner" /></div>
+              <div className="course-page__player-loading"><div className="course-page__spinner" /></div>
             ) : showLocked ? (
               <LockedOverlay />
             ) : showLogin ? (
@@ -133,7 +133,7 @@ export default function CoursePage() {
                 onEnded={handleVideoEnd}
               />
             ) : (
-              <div className="player-placeholder">
+              <div className="course-page__player-placeholder">
                 <span>Selecciona un video para comenzar</span>
               </div>
             )}
@@ -141,10 +141,10 @@ export default function CoursePage() {
 
           {/* Info del video activo */}
           {selectedVideo && !showLocked && (
-            <div className="video-info">
-              <h2 className="video-title">{selectedVideo.title}</h2>
+            <div className="course-page__video-info">
+              <h2 className="course-page__video-title">{selectedVideo.title}</h2>
               {selectedVideo.description && (
-                <p className="video-description">{selectedVideo.description}</p>
+                <p className="course-page__video-description">{selectedVideo.description}</p>
               )}
             </div>
           )}

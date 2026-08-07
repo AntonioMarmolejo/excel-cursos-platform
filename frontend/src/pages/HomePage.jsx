@@ -48,13 +48,13 @@ export default function HomePage() {
         <div className="home-page">
             <Navbar />
 
-            <main className="home-main">
+            <main className="home-page__main">
 
                 {/* ── Continuar aprendiendo ── */}
                 {!loading && inProgress.length > 0 && (
-                    <section className="continue-section">
-                        <h2 className="section-title">Continuar aprendiendo</h2>
-                        <div className="continue-grid">
+                    <section className="home-page__continue-section">
+                        <h2 className="home-page__section-title">Continuar aprendiendo</h2>
+                        <div className="home-page__continue-grid">
                             {inProgress.map(course => {
                                 const prog = progressMap[course._id];
                                 return (
@@ -63,21 +63,21 @@ export default function HomePage() {
                                         className="continue-card"
                                         onClick={() => navigate(`/cursos/${course.slug}`)}
                                     >
-                                        <div className="continue-thumb">
+                                        <div className="continue-card__thumb">
                                             {course.thumbnail
                                                 ? <img src={course.thumbnail} alt={course.title} />
-                                                : <div className="continue-thumb-placeholder">📊</div>
+                                                : <div className="continue-card__thumb-placeholder">📊</div>
                                             }
                                         </div>
-                                        <div className="continue-info">
-                                            <span className="continue-title">{course.title}</span>
-                                            <div className="continue-progress-bar">
+                                        <div className="continue-card__info">
+                                            <span className="continue-card__title">{course.title}</span>
+                                            <div className="continue-card__progress-bar">
                                                 <div
-                                                    className="continue-progress-fill"
+                                                    className="continue-card__progress-fill"
                                                     style={{ width: `${prog.percentage}%` }}
                                                 />
                                             </div>
-                                            <span className="continue-pct">{prog.percentage}% completado</span>
+                                            <span className="continue-card__pct">{prog.percentage}% completado</span>
                                         </div>
                                     </div>
                                 );
@@ -88,21 +88,21 @@ export default function HomePage() {
 
                 {/* ── Catálogo ── */}
                 <section>
-                    <div className="home-header">
+                    <div className="home-page__header">
                         <h1>Todos los cursos</h1>
                         <p>Aprende Excel desde cero hasta nivel avanzado</p>
                     </div>
 
                     {loading ? (
-                        <div className="home-loading">
-                            <div className="home-spinner" />
+                        <div className="home-page__loading">
+                            <div className="home-page__spinner" />
                         </div>
                     ) : courses.length === 0 ? (
-                        <div className="home-empty">
+                        <div className="home-page__empty">
                             <p>No hay cursos disponibles por el momento.</p>
                         </div>
                     ) : (
-                        <div className="courses-grid">
+                        <div className="home-page__courses-grid">
                             {courses.map(course => {
                                 const prog = progressMap[course._id] || { percentage: 0 };
                                 const isCompleted = prog.percentage === 100;
@@ -114,48 +114,48 @@ export default function HomePage() {
                                         className="course-card"
                                         onClick={() => navigate(`/cursos/${course.slug}`)}
                                     >
-                                        <div className="card-thumbnail">
+                                        <div className="course-card__thumbnail">
                                             {course.thumbnail
                                                 ? <img src={course.thumbnail} alt={course.title} />
-                                                : <div className="card-thumbnail-placeholder">📊</div>
+                                                : <div className="course-card__thumbnail-placeholder">📊</div>
                                             }
-                                            <span className={`card-level card-level--${course.level}`}>
+                                            <span className={`course-card__level course-card__level--${course.level}`}>
                                                 {LEVEL_LABEL[course.level] || course.level}
                                             </span>
                                             {isCompleted && (
-                                                <span className="card-completed-badge">✓</span>
+                                                <span className="course-card__completed-badge">✓</span>
                                             )}
                                         </div>
 
-                                        <div className="card-body">
-                                            <h2 className="card-title">{course.title}</h2>
-                                            <p className="card-desc">{course.description}</p>
+                                        <div className="course-card__body">
+                                            <h2 className="course-card__title">{course.title}</h2>
+                                            <p className="course-card__desc">{course.description}</p>
 
-                                            <div className="card-stats">
+                                            <div className="course-card__stats">
                                                 {course.totalVideos > 0 && <span>{course.totalVideos} videos</span>}
                                                 {course.totalDuration > 0 && <span>{formatDuration(course.totalDuration)}</span>}
                                             </div>
 
                                             {isStarted && (
-                                                <div className="card-progress-wrap">
-                                                    <div className="card-progress-bar">
+                                                <div className="course-card__progress-wrap">
+                                                    <div className="course-card__progress-bar">
                                                         <div
-                                                            className="card-progress-fill"
+                                                            className="course-card__progress-fill"
                                                             style={{ width: `${prog.percentage}%` }}
                                                         />
                                                     </div>
-                                                    <span className="card-progress-pct">{prog.percentage}%</span>
+                                                    <span className="course-card__progress-pct">{prog.percentage}%</span>
                                                 </div>
                                             )}
 
-                                            <div className="card-footer">
+                                            <div className="course-card__footer">
                                                 {isCompleted ? (
-                                                    <span className="card-price card-price--done">✓ Completado</span>
+                                                    <span className="course-card__price course-card__price--done">✓ Completado</span>
                                                 ) : (
-                                                    <span className="card-price">${course.price?.lifetime?.toFixed(2)}</span>
+                                                    <span className="course-card__price">${course.price?.lifetime?.toFixed(2)}</span>
                                                 )}
                                                 <button
-                                                    className={`card-btn${isCompleted ? ' card-btn--done' : ''}`}
+                                                    className={`course-card__btn${isCompleted ? ' course-card__btn--done' : ''}`}
                                                     onClick={e => { e.stopPropagation(); navigate(`/cursos/${course.slug}`); }}
                                                 >
                                                     {isCompleted ? 'Repasar' : isStarted ? 'Continuar →' : 'Comenzar →'}

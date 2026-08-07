@@ -31,16 +31,16 @@ export default function RegisterPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo">
+      <div className="auth-page__card">
+        <div className="auth-page__logo">
           <h1>Cursos de Excel</h1>
           <p>Crea tu cuenta gratuita</p>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-          {error && <div className="auth-error">{error}</div>}
+        <form className="auth-page__form" onSubmit={handleSubmit}>
+          {error && <div className="auth-page__error">{error}</div>}
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="name">Nombre completo</label>
             <input
               id="name"
@@ -54,7 +54,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="email">Correo electrónico</label>
             <input
               id="email"
@@ -67,7 +67,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div className="form-group">
+          <div className="auth-page__group">
             <label htmlFor="password">Contraseña</label>
             <input
               id="password"
@@ -81,12 +81,12 @@ export default function RegisterPage() {
             />
           </div>
 
-          <button type="submit" className="auth-btn" disabled={loading}>
+          <button type="submit" className="auth-page__btn" disabled={loading}>
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
 
-        <div className="auth-links">
+        <div className="auth-page__links">
           <span>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></span>
         </div>
       </div>

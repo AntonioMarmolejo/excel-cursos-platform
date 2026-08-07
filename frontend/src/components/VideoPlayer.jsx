@@ -37,12 +37,12 @@ export default function VideoPlayer({ src, title, onEnded }) {
   if (!src) return null;
 
   return (
-    <div className="player-wrapper">
+    <div className="video-player">
       <iframe
         ref={iframeRef}
         src={src}
         title={title}
-        className="video-element"
+        className="video-player__iframe"
         allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
         allowFullScreen
       />
