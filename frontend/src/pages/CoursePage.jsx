@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import VideoPlayer from '../components/VideoPlayer';
 import VideoList from '../components/VideoList';
 import LockedOverlay from '../components/LockedOverlay';
+import CommentSection from '../components/CommentSection';
 import '../styles/CoursePage.css';
 
 export default function CoursePage() {
@@ -143,6 +144,11 @@ export default function CoursePage() {
                 <p className="video-description">{selectedVideo.description}</p>
               )}
             </div>
+          )}
+
+          {/* Comentarios */}
+          {selectedVideo && !showLocked && streamUrl && (
+            <CommentSection videoId={selectedVideo._id} courseId={course._id} />
           )}
         </main>
 
