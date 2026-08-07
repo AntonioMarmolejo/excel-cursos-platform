@@ -6,6 +6,7 @@ import AdminRoute from './components/AdminRoute';
 
 import HomePage from './pages/HomePage';
 import CoursePage from './pages/CoursePage';
+import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
@@ -34,6 +35,7 @@ function App() {
                     {/* App (privado) */}
                     <Route path="/" element={<PrivateRoute><HomePage /></PrivateRoute>} />
                     <Route path="/cursos/:slug" element={<PrivateRoute><CoursePage /></PrivateRoute>} />
+                    <Route path="/perfil" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
 
                     {/* Admin (privado + rol admin) */}
                     <Route path="/admin" element={<AdminRoute><AdminLayout /></AdminRoute>}>

@@ -13,6 +13,7 @@ export default function Navbar() {
                     {user.role === 'admin' && (
                         <Link to="/admin" className="navbar__admin-link">Panel Admin</Link>
                     )}
+                    <Link to="/perfil" className="navbar__profile-link">Mi Perfil</Link>
                     <span className="navbar__name">{user.name}</span>
                     <button className="navbar__logout" onClick={logout}>Cerrar sesión</button>
                 </div>

@@ -46,6 +46,16 @@
   background: rgba(34, 197, 94, 0.12);
 }
 
+.navbar__profile-link {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.navbar__profile-link:hover {
+  color: var(--primary);
+}
+
 .navbar__logout {
   background: none;
   border: 1px solid var(--border);
