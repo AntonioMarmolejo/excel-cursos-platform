@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react';
-import api from '../api/client';
+import { useEffect, useRef, useState } from 'react';
+import api, { resolveFileUrl } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import Certificate from '../components/Certificate';
 import '../styles/ProfilePage.css';
 
 const SECTIONS = [
     { id: 'cursos',       label: 'Mis cursos',   icon: '📚', available: true },
-    { id: 'certificados', label: 'Certificados', icon: '🎓', available: false },
+    { id: 'certificados', label: 'Certificados', icon: '🎓', available: true },
     { id: 'cuestionarios', label: 'Cuestionarios', icon: '📝', available: false },
     { id: 'pedidos',      label: 'Pedidos',       icon: '🛒', available: false },
 ];
 
-const SETTINGS_LINKS = ['General', 'Avatar', 'Imagen de portada', 'Contraseña', 'Privacidad'];
+const SETTINGS_LINKS = ['General', 'Imagen de portada', 'Contraseña', 'Privacidad'];
 
 const TABS = [
     { id: 'todos',       label: 'Todos' },
@@ -22,12 +23,15 @@ const TABS = [
 ];
 
 export default function ProfilePage() {
-    const { user, logout } = useAuth();
+    const { user, logout, updateUser } = useAuth();
     const [progress, setProgress] = useState([]);
     const [loading, setLoading]   = useState(true);
     const [section, setSection]   = useState('cursos');
     const [tab, setTab]           = useState('todos');
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [uploadingAvatar, setUploadingAvatar] = useState(false);
+    const [avatarError, setAvatarError] = useState('');
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         api.get('/progress')
@@ -35,6 +39,31 @@ export default function ProfilePage() {
             .catch(() => setProgress([]))
             .finally(() => setLoading(false));
     }, []);
+
+    const handleAvatarClick = () => fileInputRef.current?.click();
+
+    const handleAvatarChange = async (e) => {
+        const file = e.target.files?.[0];
+        e.target.value = ''; // permite volver a elegir el mismo archivo después
+        if (!file) return;
+
+        setAvatarError('');
+        setUploadingAvatar(true);
+        try {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            const res = await api.put('/auth/me/avatar', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            updateUser({ avatar: res.data.user.avatar });
+        } catch (err) {
+            setAvatarError(err.response?.data?.message || 'Error al subir la imagen');
+        } finally {
+            setUploadingAvatar(false);
+        }
+    };
+
+    const completedCourses = progress.filter(p => p.percentage === 100);
 
     const enrolled   = progress.length;
     const inProgress = progress.filter(p => p.percentage > 0 && p.percentage < 100).length;
@@ -63,8 +92,32 @@ export default function ProfilePage() {
 
             {/* Cabecera con datos del usuario */}
             <header className="profile-page__header">
-                <div className="profile-page__avatar">{user?.name?.[0]?.toUpperCase() || '?'}</div>
+                <div className="profile-page__avatar-wrap">
+                    <div className="profile-page__avatar">
+                        {user?.avatar
+                            ? <img src={resolveFileUrl(user.avatar)} alt={user.name} />
+                            : (user?.name?.[0]?.toUpperCase() || '?')
+                        }
+                    </div>
+                    <button
+                        type="button"
+                        className="profile-page__avatar-edit"
+                        onClick={handleAvatarClick}
+                        disabled={uploadingAvatar}
+                        title="Cambiar foto de perfil"
+                    >
+                        {uploadingAvatar ? '…' : '✏️'}
+                    </button>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp, image/gif"
+                        onChange={handleAvatarChange}
+                        hidden
+                    />
+                </div>
                 <div className="profile-page__identity">
+                    {avatarError && <p className="profile-page__avatar-error">{avatarError}</p>}
                     <h1 className="profile-page__name">{user?.name}</h1>
                     <p className="profile-page__meta">
                         {user?.email}
@@ -118,7 +171,27 @@ export default function ProfilePage() {
 
                 {/* Contenido */}
                 <main className="profile-page__content">
-                    {section !== 'cursos' ? (
+                    {section === 'certificados' ? (
+                        loading ? (
+                            <div className="profile-page__empty">Cargando...</div>
+                        ) : completedCourses.length === 0 ? (
+                            <div className="profile-page__empty">
+                                <span className="profile-page__empty-icon">🎓</span>
+                                <p>Aún no tienes certificados. ¡Completa un curso al 100% para obtener el tuyo!</p>
+                            </div>
+                        ) : (
+                            <div className="profile-page__certificates">
+                                {completedCourses.map(p => (
+                                    <Certificate
+                                        key={p._id}
+                                        studentName={user?.name}
+                                        courseTitle={p.course?.title}
+                                        completedAt={p.completedAt || p.updatedAt}
+                                    />
+                                ))}
+                            </div>
+                        )
+                    ) : section !== 'cursos' ? (
                         <div className="profile-page__empty">
                             <span className="profile-page__empty-icon">
                                 {SECTIONS.find(s => s.id === section)?.icon}

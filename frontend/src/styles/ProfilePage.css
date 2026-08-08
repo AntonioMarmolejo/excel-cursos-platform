@@ -13,8 +13,12 @@
   border-bottom: 1px solid var(--border);
 }
 
-.profile-page__avatar {
+.profile-page__avatar-wrap {
+  position: relative;
   flex-shrink: 0;
+}
+
+.profile-page__avatar {
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -26,6 +30,47 @@
   font-size: 1.75rem;
   font-weight: 700;
   border: 2px solid var(--border);
+  overflow: hidden;
+}
+
+.profile-page__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-page__avatar-edit {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.profile-page__avatar-edit:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--surface2);
+}
+
+.profile-page__avatar-edit:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.profile-page__avatar-error {
+  color: #f87171;
+  font-size: 0.8rem;
+  margin: 0 0 6px;
 }
 
 .profile-page__name {
@@ -39,6 +84,13 @@
   color: var(--text-muted);
   font-size: 0.875rem;
   margin: 0;
+}
+
+/* ── Certificados ── */
+.profile-page__certificates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.5rem;
 }
 
 /* ── Body layout ── */
