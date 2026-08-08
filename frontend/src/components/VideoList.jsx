@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { GENERAL_SECTION, groupVideosBySection } from '../utils/courseGrouping';
 import '../styles/VideoList.css';
 
 function formatDuration(seconds) {
@@ -8,32 +9,19 @@ function formatDuration(seconds) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-const GENERAL = 'Contenido del curso';
-
 export default function VideoList({ videos, selectedId, onSelect }) {
   const [search, setSearch] = useState('');
   const [openSections, setOpenSections] = useState(() => new Set());
 
-  // Agrupa los videos por sección, preservando el orden de aparición.
-  // Si ningún video tiene sección asignada, se muestra como lista plana (sin acordeón).
-  const hasSections = videos.some(v => v.section);
-  const groups = useMemo(() => {
-    if (!hasSections) return null;
-    const map = new Map();
-    videos.forEach(v => {
-      const key = v.section || GENERAL;
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push(v);
-    });
-    return Array.from(map.entries());
-  }, [videos, hasSections]);
+  const groups = useMemo(() => groupVideosBySection(videos), [videos]);
+  const hasSections = groups !== null;
 
   // Al cambiar el video activo, asegura que su sección esté abierta.
   useEffect(() => {
     if (!hasSections || !selectedId) return;
     const active = videos.find(v => v._id === selectedId);
     if (active) {
-      setOpenSections(prev => new Set(prev).add(active.section || GENERAL));
+      setOpenSections(prev => new Set(prev).add(active.section || GENERAL_SECTION));
     }
   }, [selectedId, hasSections, videos]);
 

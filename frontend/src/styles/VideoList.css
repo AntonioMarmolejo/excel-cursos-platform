@@ -7,57 +7,86 @@
   min-height: 0;
 }
 
-.video-list__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--border);
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--text);
-  flex-shrink: 0;
-}
-
-.video-list__count {
-  font-weight: 400;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-.video-list__progress {
-  padding: 0.75rem 1.25rem;
+/* ── Búsqueda ── */
+.video-list__search-wrap {
+  padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
-.video-list__progress-bar {
-  height: 4px;
+.video-list__search {
+  width: 100%;
+  padding: 8px 12px;
   background: var(--surface2);
-  border-radius: 2px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.video-list__search:focus { border-color: var(--primary); }
+.video-list__search::placeholder { color: var(--text-dim); }
+
+.video-list__scroll {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Secciones (acordeón) ── */
+.video-list__section {
+  border-bottom: 1px solid var(--border);
+}
+
+.video-list__section-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 1.25rem;
+  background: var(--surface2);
+  border: none;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+.video-list__section-arrow {
+  display: inline-block;
+  transition: transform 0.15s;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.video-list__section-arrow--open {
+  transform: rotate(90deg);
+}
+
+.video-list__section-title {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.video-list__progress-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 2px;
-  transition: width 0.3s;
+.video-list__section-count {
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
 }
 
-.video-list__progress-label {
-  font-size: 0.75rem;
-  color: var(--primary);
-  margin-top: 6px;
-  display: block;
-}
-
+/* ── Lista de videos ── */
 .video-list__items {
   list-style: none;
   margin: 0;
   padding: 0;
-  overflow-y: auto;
-  flex: 1;
 }
 
 .video-list__item {
