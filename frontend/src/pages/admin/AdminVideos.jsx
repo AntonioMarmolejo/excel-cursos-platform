@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import AdminModal from '../../components/AdminModal';
 
-const EMPTY = { title: '', description: '', bunnyVideoId: '', duration: 0, order: 1, isPublished: false };
+const EMPTY = { title: '', description: '', section: '', bunnyVideoId: '', resourceUrl: '', duration: 0, order: 1, isPublished: false };
 
 const fmtSecs = s => { const m = Math.floor(s / 60); return `${m}:${String(s % 60).padStart(2, '0')}`; };
 
@@ -33,7 +33,11 @@ export default function AdminVideos() {
         setError('');
     };
     const openEdit = (v) => {
-        setForm({ title: v.title, description: v.description || '', bunnyVideoId: v.bunnyVideoId, duration: v.duration || 0, order: v.order, isPublished: v.isPublished });
+        setForm({
+            title: v.title, description: v.description || '', section: v.section || '',
+            bunnyVideoId: v.bunnyVideoId, resourceUrl: v.resourceUrl || '',
+            duration: v.duration || 0, order: v.order, isPublished: v.isPublished,
+        });
         setEditing(v);
         setError('');
     };
@@ -81,18 +85,19 @@ export default function AdminVideos() {
                 <table className="admin-table__table">
                     <thead>
                         <tr>
-                            <th>#</th><th>Título</th><th>Bunny ID</th>
+                            <th>#</th><th>Título</th><th>Sección</th><th>Bunny ID</th>
                             <th>Duración</th><th>Gratis</th><th>Estado</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {videos.length === 0 && (
-                            <tr><td colSpan={7} className="admin-empty">No hay videos</td></tr>
+                            <tr><td colSpan={8} className="admin-empty">No hay videos</td></tr>
                         )}
                         {videos.map(v => (
                             <tr key={v._id}>
                                 <td>{v.order}</td>
                                 <td className="admin-table__cell--title">{v.title}</td>
+                                <td className="admin-table__cell--muted-sm">{v.section || '—'}</td>
                                 <td className="admin-table__cell--mono">
                                     {v.bunnyVideoId?.slice(0, 18)}…
                                 </td>
@@ -129,6 +134,16 @@ export default function AdminVideos() {
                         <div className="admin-form__field">
                             <label>Bunny Video ID *</label>
                             <input name="bunnyVideoId" value={form.bunnyVideoId} onChange={handleChange} required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+                        </div>
+
+                        <div className="admin-form__field">
+                            <label>Sección / módulo</label>
+                            <input name="section" value={form.section} onChange={handleChange} placeholder="Ej. El entorno de Excel" />
+                        </div>
+
+                        <div className="admin-form__field">
+                            <label>URL de recurso descargable (opcional)</label>
+                            <input name="resourceUrl" value={form.resourceUrl} onChange={handleChange} placeholder="https://... (planilla, PDF, etc.)" />
                         </div>
 
                         <div className="admin-form__field-row">

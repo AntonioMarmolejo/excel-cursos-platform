@@ -6,7 +6,7 @@ import AdminModal from '../../components/AdminModal';
 const EMPTY = {
     title: '', slug: '', description: '', level: 'basico',
     thumbnail: '', priceLifetime: 0, order: 0,
-    instructorName: 'Administrador', isPublished: false,
+    instructorName: 'Administrador', instructorBio: '', isPublished: false,
 };
 
 export default function AdminCourses() {
@@ -26,6 +26,7 @@ export default function AdminCourses() {
             level: c.level, thumbnail: c.thumbnail || '',
             priceLifetime: c.price?.lifetime ?? 0,
             order: c.order, instructorName: c.instructor?.name || 'Administrador',
+            instructorBio: c.instructor?.bio || '',
             isPublished: c.isPublished,
         });
         setEditing(c);
@@ -45,7 +46,7 @@ export default function AdminCourses() {
             level: form.level, thumbnail: form.thumbnail || undefined,
             price: { lifetime: Number(form.priceLifetime) },
             order: Number(form.order), isPublished: form.isPublished,
-            instructor: { name: form.instructorName },
+            instructor: { name: form.instructorName, bio: form.instructorBio },
         };
         try {
             editing._id
@@ -157,6 +158,11 @@ export default function AdminCourses() {
                                 <label>Instructor</label>
                                 <input name="instructorName" value={form.instructorName} onChange={handleChange} />
                             </div>
+                        </div>
+
+                        <div className="admin-form__field">
+                            <label>Bio del instructor</label>
+                            <textarea name="instructorBio" value={form.instructorBio} onChange={handleChange} placeholder="Se muestra en la pestaña &quot;Instructor&quot; del curso" />
                         </div>
 
                         <div className="admin-form__field">

@@ -20,6 +20,7 @@ const courseSchema = new mongoose.Schema({
     instructor: {
         name: { type: String, default: 'Administrador' },
         avatar: { type: String },
+        bio: { type: String, default: '' },
     },
 
     totalVideos: { type: Number, default: 0 },

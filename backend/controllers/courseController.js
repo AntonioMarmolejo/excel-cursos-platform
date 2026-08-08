@@ -22,7 +22,7 @@ exports.getOne = async (req, res) => {
 
         const videos = await Video.find({ course: course._id, isPublished: true })
             .sort('order')
-            .select('title description order isFree duration thumbnail bunnyVideoId');
+            .select('title description section order isFree duration thumbnail bunnyVideoId resourceUrl');
 
         // Si el usuario está autenticado, agregar info de acceso y progreso
         let progress = null;
@@ -41,23 +41,29 @@ exports.getOne = async (req, res) => {
                 _id: v._id,
                 title: v.title,
                 description: v.description,
+                section: v.section || '',
                 order: v.order,
                 isFree: v.isFree,
                 duration: v.duration,
                 thumbnail: v.thumbnail,
                 locked: !canWatch,
-                // Solo devolver el ID de Bunny si puede ver el video
+                // Solo devolver el ID de Bunny (y el recurso descargable) si puede ver el video
                 bunnyVideoId: canWatch ? v.bunnyVideoId : null,
+                resourceUrl: canWatch ? v.resourceUrl : null,
                 completed: vProgress?.completed || false,
                 watchedSecs: vProgress?.watchedSecs || 0,
             };
         });
+
+        // Estudiantes que han iniciado este curso (aproximación honesta: quienes tienen progreso registrado)
+        const studentsCount = await Progress.countDocuments({ course: course._id });
 
         res.json({
             success: true,
             course,
             videos: videosWithAccess,
             hasAccess,
+            studentsCount,
             progressPercentage: progress?.percentage || 0,
         });
     } catch (err) {

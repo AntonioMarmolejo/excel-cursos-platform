@@ -5,6 +5,12 @@ const videoSchema = new mongoose.Schema({
     title: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
 
+    // Nombre del módulo/sección al que pertenece (para agrupar en el programa del curso)
+    section: { type: String, default: '', trim: true },
+
+    // URL de un recurso descargable asociado a la lección (ej. planilla de práctica)
+    resourceUrl: { type: String },
+
     // Bunny.net
     bunnyVideoId: { type: String, required: true },   // ID del video en la librería Bunny
     duration: { type: Number, default: 0 },        // segundos, máx 300 (5 min)
