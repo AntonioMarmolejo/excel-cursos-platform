@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/courseController');
 const { protect, adminOnly } = require('../middleware/auth');
+const { uploadCourseThumbnail } = require('../middleware/upload');
 
 // Público (con usuario opcional para saber si tiene acceso)
 router.get('/', (req, res, next) => { require('../middleware/auth').protect(req, res, () => next()); next; }, ctrl.getAll);
@@ -25,6 +26,7 @@ router.get('/:slug', (req, res, next) => {
 // Admin
 router.post('/', protect, adminOnly, ctrl.create);
 router.put('/:id', protect, adminOnly, ctrl.update);
+router.put('/:id/thumbnail', protect, adminOnly, uploadCourseThumbnail.single('thumbnail'), ctrl.uploadThumbnail);
 router.delete('/:id', protect, adminOnly, ctrl.remove);
 
 module.exports = router;

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api/client';
+import api, { resolveFileUrl } from '../../api/client';
 import AdminModal from '../../components/AdminModal';
 
 const EMPTY = {
@@ -15,6 +15,9 @@ export default function AdminCourses() {
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [uploadingThumb, setUploadingThumb] = useState(false);
+    const [thumbError, setThumbError] = useState('');
+    const thumbInputRef = useRef(null);
 
     const load = () => api.get('/admin/courses').then(r => setCourses(r.data.courses)).catch(() => {});
     useEffect(() => { load(); }, []);
@@ -58,6 +61,28 @@ export default function AdminCourses() {
             setError(err.response?.data?.message || 'Error al guardar');
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleThumbnailUpload = async (e) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file || !editing?._id) return;
+
+        setThumbError('');
+        setUploadingThumb(true);
+        try {
+            const formData = new FormData();
+            formData.append('thumbnail', file);
+            const res = await api.put(`/courses/${editing._id}/thumbnail`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            setForm(p => ({ ...p, thumbnail: res.data.course.thumbnail }));
+            load();
+        } catch (err) {
+            setThumbError(err.response?.data?.message || 'Error al subir la imagen');
+        } finally {
+            setUploadingThumb(false);
         }
     };
 
@@ -166,8 +191,40 @@ export default function AdminCourses() {
                         </div>
 
                         <div className="admin-form__field">
-                            <label>URL thumbnail</label>
-                            <input name="thumbnail" value={form.thumbnail} onChange={handleChange} placeholder="https://..." />
+                            <label>Imagen de portada</label>
+
+                            {form.thumbnail && (
+                                <img
+                                    src={resolveFileUrl(form.thumbnail) || form.thumbnail}
+                                    alt="Portada actual"
+                                    className="admin-form__thumbnail-preview"
+                                />
+                            )}
+
+                            <input name="thumbnail" value={form.thumbnail} onChange={handleChange} placeholder="https://... (URL externa)" />
+
+                            {editing?._id ? (
+                                <>
+                                    <button
+                                        type="button"
+                                        className="btn btn--outline btn--sm"
+                                        onClick={() => thumbInputRef.current?.click()}
+                                        disabled={uploadingThumb}
+                                    >
+                                        {uploadingThumb ? 'Subiendo…' : '📤 Subir imagen desde tu equipo'}
+                                    </button>
+                                    <input
+                                        ref={thumbInputRef}
+                                        type="file"
+                                        accept="image/png, image/jpeg, image/webp, image/gif"
+                                        onChange={handleThumbnailUpload}
+                                        hidden
+                                    />
+                                    {thumbError && <p className="admin-form__thumbnail-error">{thumbError}</p>}
+                                </>
+                            ) : (
+                                <p className="admin-form__hint">Guarda el curso primero para poder subir una imagen desde tu equipo.</p>
+                            )}
                         </div>
 
                         <div className="admin-form__field admin-form__field--check">

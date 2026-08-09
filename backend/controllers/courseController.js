@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const Course = require('../models/Course');
 const Video = require('../models/Video');
 const Progress = require('../models/Progress');
@@ -89,6 +91,30 @@ exports.update = async (req, res) => {
         res.json({ success: true, course });
     } catch (err) {
         res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+// ── PUT /api/courses/:id/thumbnail (admin) ────────
+exports.uploadThumbnail = async (req, res) => {
+    try {
+        if (!req.file)
+            return res.status(400).json({ success: false, message: 'No se recibió ninguna imagen' });
+
+        const course = await Course.findById(req.params.id);
+        if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+
+        // Borrar la portada anterior solo si era un archivo subido localmente (no una URL externa)
+        if (course.thumbnail?.startsWith('/uploads/')) {
+            const oldPath = path.join(__dirname, '..', course.thumbnail);
+            fs.unlink(oldPath, () => { });
+        }
+
+        course.thumbnail = `/uploads/courses/${req.file.filename}`;
+        await course.save();
+
+        res.json({ success: true, course });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
 };
 

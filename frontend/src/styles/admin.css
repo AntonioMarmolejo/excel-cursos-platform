@@ -386,6 +386,27 @@
     font-size: 0.8rem;
 }
 
+.admin-form__thumbnail-preview {
+    width: 100%;
+    max-width: 240px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.admin-form__thumbnail-error {
+    color: #f87171;
+    font-size: 0.78rem;
+    margin: 0;
+}
+
+.admin-form__hint {
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    margin: 0;
+}
+
 /* ═══ Bloque: pagination ═══ */
 .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 1rem; }
 
