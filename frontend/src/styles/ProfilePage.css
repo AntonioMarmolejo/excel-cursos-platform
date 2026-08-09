@@ -186,10 +186,84 @@
 }
 
 .profile-page__settings-link {
+  display: block;
+  width: 100%;
   padding: 6px 0;
   font-size: 0.8rem;
   color: var(--text-dim);
   cursor: not-allowed;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: inherit;
+}
+
+.profile-page__settings-link--active {
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.profile-page__settings-link--active:hover,
+.profile-page__settings-link--open {
+  color: var(--primary);
+}
+
+.profile-page__password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0 12px;
+  padding: 10px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+.profile-page__password-form input {
+  padding: 7px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.profile-page__password-form input:focus {
+  border-color: var(--primary);
+}
+
+.profile-page__password-submit {
+  padding: 7px 12px;
+  background: var(--primary);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-page__password-submit:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.profile-page__password-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-page__password-error {
+  color: #f87171;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.profile-page__password-success {
+  color: var(--primary-light);
+  font-size: 0.75rem;
+  margin: 0;
 }
 
 .profile-page__logout {

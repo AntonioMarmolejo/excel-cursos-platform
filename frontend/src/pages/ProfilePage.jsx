@@ -12,7 +12,12 @@ const SECTIONS = [
     { id: 'pedidos',      label: 'Pedidos',       icon: '🛒', available: false },
 ];
 
-const SETTINGS_LINKS = ['General', 'Imagen de portada', 'Contraseña', 'Privacidad'];
+const SETTINGS_LINKS = [
+    { id: 'general',  label: 'General',          available: false },
+    { id: 'portada',  label: 'Imagen de portada', available: false },
+    { id: 'password', label: 'Contraseña',        available: true },
+    { id: 'privacy',  label: 'Privacidad',        available: false },
+];
 
 const TABS = [
     { id: 'todos',       label: 'Todos' },
@@ -32,6 +37,12 @@ export default function ProfilePage() {
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [avatarError, setAvatarError] = useState('');
     const fileInputRef = useRef(null);
+
+    const [activeSetting, setActiveSetting] = useState(null); // id de SETTINGS_LINKS abierto, o null
+    const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
+    const [pwSaving, setPwSaving] = useState(false);
+    const [pwError, setPwError] = useState('');
+    const [pwSuccess, setPwSuccess] = useState('');
 
     useEffect(() => {
         api.get('/progress')
@@ -61,6 +72,44 @@ export default function ProfilePage() {
         } finally {
             setUploadingAvatar(false);
         }
+    };
+
+    const handlePasswordChange = (e) =>
+        setPwForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+        setPwError('');
+        setPwSuccess('');
+
+        if (pwForm.next.length < 6) {
+            setPwError('La nueva contraseña debe tener al menos 6 caracteres');
+            return;
+        }
+        if (pwForm.next !== pwForm.confirm) {
+            setPwError('Las contraseñas nuevas no coinciden');
+            return;
+        }
+
+        setPwSaving(true);
+        try {
+            await api.put('/auth/me/password', {
+                currentPassword: pwForm.current,
+                newPassword: pwForm.next,
+            });
+            setPwSuccess('Contraseña actualizada correctamente');
+            setPwForm({ current: '', next: '', confirm: '' });
+        } catch (err) {
+            setPwError(err.response?.data?.message || 'Error al actualizar la contraseña');
+        } finally {
+            setPwSaving(false);
+        }
+    };
+
+    const toggleSetting = (id) => {
+        setActiveSetting(prev => (prev === id ? null : id));
+        setPwError('');
+        setPwSuccess('');
     };
 
     const completedCourses = progress.filter(p => p.percentage === 100);
@@ -155,10 +204,59 @@ export default function ProfilePage() {
                         </button>
                         {settingsOpen && (
                             <div className="profile-page__settings-menu">
-                                {SETTINGS_LINKS.map(label => (
-                                    <span key={label} className="profile-page__settings-link" title="Próximamente">
-                                        {label}
-                                    </span>
+                                {SETTINGS_LINKS.map(s => (
+                                    <div key={s.id}>
+                                        {s.available ? (
+                                            <button
+                                                type="button"
+                                                className={`profile-page__settings-link profile-page__settings-link--active${activeSetting === s.id ? ' profile-page__settings-link--open' : ''}`}
+                                                onClick={() => toggleSetting(s.id)}
+                                            >
+                                                {s.label}
+                                            </button>
+                                        ) : (
+                                            <span className="profile-page__settings-link" title="Próximamente">
+                                                {s.label}
+                                            </span>
+                                        )}
+
+                                        {s.id === 'password' && activeSetting === 'password' && (
+                                            <form className="profile-page__password-form" onSubmit={handlePasswordSubmit}>
+                                                {pwError && <p className="profile-page__password-error">{pwError}</p>}
+                                                {pwSuccess && <p className="profile-page__password-success">{pwSuccess}</p>}
+
+                                                <input
+                                                    type="password"
+                                                    name="current"
+                                                    placeholder="Contraseña actual"
+                                                    value={pwForm.current}
+                                                    onChange={handlePasswordChange}
+                                                    required
+                                                />
+                                                <input
+                                                    type="password"
+                                                    name="next"
+                                                    placeholder="Nueva contraseña"
+                                                    value={pwForm.next}
+                                                    onChange={handlePasswordChange}
+                                                    minLength={6}
+                                                    required
+                                                />
+                                                <input
+                                                    type="password"
+                                                    name="confirm"
+                                                    placeholder="Confirmar nueva contraseña"
+                                                    value={pwForm.confirm}
+                                                    onChange={handlePasswordChange}
+                                                    minLength={6}
+                                                    required
+                                                />
+                                                <button type="submit" className="profile-page__password-submit" disabled={pwSaving}>
+                                                    {pwSaving ? 'Guardando…' : 'Actualizar contraseña'}
+                                                </button>
+                                            </form>
+                                        )}
+                                    </div>
                                 ))}
                             </div>
                         )}

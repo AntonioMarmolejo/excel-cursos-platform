@@ -83,6 +83,29 @@ exports.uploadAvatar = async (req, res) => {
     }
 };
 
+// ── PUT /api/auth/me/password ─────────────────────
+exports.updatePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword)
+            return res.status(400).json({ success: false, message: 'Completa ambos campos' });
+        if (newPassword.length < 6)
+            return res.status(400).json({ success: false, message: 'La nueva contraseña debe tener al menos 6 caracteres' });
+
+        const user = await User.findById(req.user._id);
+        const matches = await user.comparePassword(currentPassword);
+        if (!matches)
+            return res.status(401).json({ success: false, message: 'La contraseña actual es incorrecta' });
+
+        user.password = newPassword; // el hook pre('save') la vuelve a hashear
+        await user.save();
+
+        res.json({ success: true, message: 'Contraseña actualizada correctamente' });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
 // ── GET /api/auth/verify/:token ───────────────────
 exports.verifyEmail = async (req, res) => {
     try {
