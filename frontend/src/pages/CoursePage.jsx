@@ -8,6 +8,7 @@ import VideoList from '../components/VideoList';
 import LockedOverlay from '../components/LockedOverlay';
 import CommentSection from '../components/CommentSection';
 import { groupVideosBySection, findNextVideo } from '../utils/courseGrouping';
+import { resolveCourseThumbnail } from '../utils/courseThumbnails';
 import '../styles/CoursePage.css';
 
 const LEVEL_LABEL = { basico: 'Básico', medio: 'Intermedio', avanzado: 'Avanzado' };
@@ -20,7 +21,6 @@ const fmtDuration = (secs) => {
 
 export default function CoursePage() {
     const { slug } = useParams();
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     const [course, setCourse] = useState(null);
@@ -265,8 +265,8 @@ export default function CoursePage() {
 
                     <aside className="course-page__sidebar-card">
                         <div className="course-page__sidebar-thumb">
-                            {course.thumbnail
-                                ? <img src={course.thumbnail} alt={course.title} />
+                            {resolveCourseThumbnail(course)
+                                ? <img src={resolveCourseThumbnail(course)} alt={course.title} />
                                 : <span>📊</span>
                             }
                         </div>

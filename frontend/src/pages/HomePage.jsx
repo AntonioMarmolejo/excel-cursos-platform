@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
+import { resolveCourseThumbnail } from '../utils/courseThumbnails';
 import '../styles/HomePage.css';
 
 const LEVEL_LABEL = { basico: 'Básico', medio: 'Intermedio', avanzado: 'Avanzado' };
@@ -64,8 +65,8 @@ export default function HomePage() {
                                         onClick={() => navigate(`/cursos/${course.slug}`)}
                                     >
                                         <div className="continue-card__thumb">
-                                            {course.thumbnail
-                                                ? <img src={course.thumbnail} alt={course.title} />
+                                            {resolveCourseThumbnail(course)
+                                                ? <img src={resolveCourseThumbnail(course)} alt={course.title} />
                                                 : <div className="continue-card__thumb-placeholder">📊</div>
                                             }
                                         </div>
@@ -115,8 +116,8 @@ export default function HomePage() {
                                         onClick={() => navigate(`/cursos/${course.slug}`)}
                                     >
                                         <div className="course-card__thumbnail">
-                                            {course.thumbnail
-                                                ? <img src={course.thumbnail} alt={course.title} />
+                                            {resolveCourseThumbnail(course)
+                                                ? <img src={resolveCourseThumbnail(course)} alt={course.title} />
                                                 : <div className="course-card__thumbnail-placeholder">📊</div>
                                             }
                                             <span className={`course-card__level course-card__level--${course.level}`}>
