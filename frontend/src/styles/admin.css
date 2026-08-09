@@ -3,6 +3,7 @@
     display: flex;
     min-height: 100vh;
     background: var(--bg);
+    position: relative;
 }
 
 .admin-layout__sidebar {
@@ -15,7 +16,59 @@
     position: sticky;
     top: 0;
     height: 100vh;
-    overflow-y: auto;
+    overflow: hidden;
+    transition: width 0.22s ease, opacity 0.18s ease;
+}
+
+.admin-layout__sidebar > * {
+    width: 220px; /* evita que el contenido se comprima antes de tiempo al colapsar */
+    flex-shrink: 0;
+}
+
+.admin-layout--collapsed .admin-layout__sidebar {
+    width: 0;
+    opacity: 0;
+    border-right-color: transparent;
+}
+
+/* ── Botón flecha para colapsar/expandir ── */
+.admin-layout__collapse-btn {
+    position: fixed;
+    top: 50%;
+    left: 220px;
+    transform: translate(-50%, -50%);
+    z-index: 50;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    transition: left 0.22s ease, background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.admin-layout__collapse-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--surface);
+}
+
+.admin-layout__collapse-btn svg {
+    transition: transform 0.22s ease;
+}
+
+.admin-layout--collapsed .admin-layout__collapse-btn {
+    left: 0;
+}
+
+.admin-layout--collapsed .admin-layout__collapse-btn svg {
+    transform: rotate(180deg);
 }
 
 .admin-layout__sidebar-logo {
@@ -444,7 +497,16 @@
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
     .admin-layout { flex-direction: column; }
-    .admin-layout__sidebar { width: 100%; height: auto; position: relative; }
+    .admin-layout__sidebar,
+    .admin-layout--collapsed .admin-layout__sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        opacity: 1;
+        border-right-color: transparent;
+    }
+    .admin-layout__sidebar > * { width: auto; }
+    .admin-layout__collapse-btn { display: none; }
     .admin-layout__content { padding: 1rem; }
     .stat-grid { grid-template-columns: repeat(2, 1fr); }
     .admin-form__field-row { grid-template-columns: 1fr; }

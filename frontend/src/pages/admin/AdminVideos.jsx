@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import AdminModal from '../../components/AdminModal';
@@ -18,6 +18,12 @@ export default function AdminVideos() {
 
     const loadVideos = () =>
         api.get(`/videos/course/${courseId}`).then(r => setVideos(r.data.videos)).catch(() => {});
+
+    // Secciones ya usadas en este curso, para sugerirlas al crear/editar un video
+    const sectionOptions = useMemo(
+        () => [...new Set(videos.map(v => v.section).filter(Boolean))],
+        [videos]
+    );
 
     useEffect(() => {
         api.get('/admin/courses').then(r => {
@@ -138,7 +144,17 @@ export default function AdminVideos() {
 
                         <div className="admin-form__field">
                             <label>Sección / módulo</label>
-                            <input name="section" value={form.section} onChange={handleChange} placeholder="Ej. El entorno de Excel" />
+                            <input
+                                name="section"
+                                list="section-options"
+                                value={form.section}
+                                onChange={handleChange}
+                                placeholder="Ej. El entorno de Excel"
+                                autoComplete="off"
+                            />
+                            <datalist id="section-options">
+                                {sectionOptions.map(s => <option key={s} value={s} />)}
+                            </datalist>
                         </div>
 
                         <div className="admin-form__field">
