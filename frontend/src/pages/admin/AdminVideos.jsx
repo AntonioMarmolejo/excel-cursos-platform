@@ -15,6 +15,7 @@ export default function AdminVideos() {
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
+    const [showBackToTop, setShowBackToTop] = useState(false);
 
     const loadVideos = () =>
         api.get(`/videos/course/${courseId}`).then(r => setVideos(r.data.videos)).catch(() => {});
@@ -32,6 +33,15 @@ export default function AdminVideos() {
         }).catch(() => {});
         loadVideos();
     }, [courseId]);
+
+    // Muestra el botón de "volver arriba" solo después de bajar un poco
+    useEffect(() => {
+        const onScroll = () => setShowBackToTop(window.scrollY > 300);
+        window.addEventListener('scroll', onScroll);
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
+
+    const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
     const openCreate = () => {
         setForm({ ...EMPTY, order: videos.length + 1 });
@@ -84,8 +94,21 @@ export default function AdminVideos() {
 
             <div className="admin-page__header">
                 <h1 className="admin-page__title">Videos del curso</h1>
-                <button className="btn btn--primary" onClick={openCreate}>+ Nuevo video</button>
             </div>
+
+            <button className="admin-fab admin-fab--new" onClick={openCreate}>+ Nuevo video</button>
+
+            <button
+                type="button"
+                className={`admin-fab admin-fab--top${showBackToTop ? ' admin-fab--visible' : ''}`}
+                onClick={scrollToTop}
+                title="Volver arriba"
+                aria-label="Volver arriba"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="18 15 12 9 6 15" />
+                </svg>
+            </button>
 
             <div className="admin-table">
                 <table className="admin-table__table">

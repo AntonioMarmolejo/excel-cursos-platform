@@ -463,6 +463,62 @@
 /* ═══ Bloque: pagination ═══ */
 .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 1rem; }
 
+/* ═══ Bloque: admin-fab (botones flotantes de acción) ═══ */
+.admin-fab {
+    position: fixed;
+    z-index: 40;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    transition: transform 0.15s, opacity 0.25s, background 0.2s, color 0.2s;
+}
+
+.admin-fab--new {
+    top: 0;
+    right: 2rem;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #000;
+    font-size: 0.825rem;
+    font-weight: 700;
+}
+
+.admin-fab--new:hover {
+    background: var(--primary-dark);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.admin-fab--top {
+    bottom: 24px;
+    right: 2rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+.admin-fab--top.admin-fab--visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.admin-fab--top:hover {
+    background: var(--primary-dark);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
 /* ═══ Bloque: course-access (contenido del modal de acceso en AdminUsers) ═══ */
 .course-access { display: flex; flex-direction: column; gap: 10px; }
 .course-access__row { display: flex; justify-content: space-between; align-items: center; }
