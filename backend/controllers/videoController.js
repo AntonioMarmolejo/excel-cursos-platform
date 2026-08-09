@@ -37,6 +37,41 @@ exports.getStreamUrl = async (req, res) => {
     }
 };
 
+// ── GET /api/videos/bunny-info/:bunnyVideoId (admin) ──
+// Consulta la API de Bunny Stream para traer metadatos reales del video
+// (usado para autocompletar la duración en el formulario del admin)
+exports.getBunnyInfo = async (req, res) => {
+    try {
+        const libraryId = process.env.BUNNY_LIBRARY_ID;
+        const apiKey     = process.env.BUNNY_API_KEY;
+
+        if (!apiKey) {
+            return res.status(500).json({
+                success: false,
+                message: 'Falta configurar BUNNY_API_KEY en el servidor (pestaña API de la librería en Bunny)',
+            });
+        }
+
+        const bunnyRes = await fetch(
+            `https://video.bunnycdn.com/library/${libraryId}/videos/${req.params.bunnyVideoId}`,
+            { headers: { AccessKey: apiKey, accept: 'application/json' } }
+        );
+
+        if (!bunnyRes.ok) {
+            return res.status(bunnyRes.status === 404 ? 404 : 502).json({
+                success: false,
+                message: 'No se encontró ese video en Bunny (revisa el ID)',
+            });
+        }
+
+        const data = await bunnyRes.json();
+        // `length` viene en segundos según la API de Bunny Stream
+        res.json({ success: true, duration: Math.round(data.length || 0), title: data.title });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
 // ── POST /api/videos (admin) ──────────────────────
 exports.create = async (req, res) => {
     try {

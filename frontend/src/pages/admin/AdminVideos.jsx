@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import AdminModal from '../../components/AdminModal';
 
-const EMPTY = { title: '', description: '', section: '', bunnyVideoId: '', resourceUrl: '', duration: 0, order: 1, isPublished: false };
+const EMPTY = { title: '', description: '', section: '', bunnyVideoId: '', resourceUrl: '', duration: 0, order: 1, isPublished: true };
 
 const fmtSecs = s => { const m = Math.floor(s / 60); return `${m}:${String(s % 60).padStart(2, '0')}`; };
 
@@ -16,6 +16,9 @@ export default function AdminVideos() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [showBackToTop, setShowBackToTop] = useState(false);
+    const [fetchingDuration, setFetchingDuration] = useState(false);
+    const [durationHint, setDurationHint] = useState('');
+    const lastFetchedBunnyId = useRef('');
 
     const loadVideos = () =>
         api.get(`/videos/course/${courseId}`).then(r => setVideos(r.data.videos)).catch(() => {});
@@ -47,6 +50,8 @@ export default function AdminVideos() {
         setForm({ ...EMPTY, order: videos.length + 1 });
         setEditing({});
         setError('');
+        setDurationHint('');
+        lastFetchedBunnyId.current = '';
     };
     const openEdit = (v) => {
         setForm({
@@ -56,11 +61,33 @@ export default function AdminVideos() {
         });
         setEditing(v);
         setError('');
+        setDurationHint('');
+        lastFetchedBunnyId.current = v.bunnyVideoId || '';
     };
 
     const handleChange = e => {
         const { name, value, type, checked } = e.target;
         setForm(p => ({ ...p, [name]: type === 'checkbox' ? checked : value }));
+    };
+
+    // Al salir del campo Bunny Video ID, consulta la duración real en Bunny
+    // y la autocompleta (el campo sigue siendo editable a mano después).
+    const handleBunnyIdBlur = async () => {
+        const id = form.bunnyVideoId.trim();
+        if (!id || id === lastFetchedBunnyId.current) return;
+
+        setDurationHint('');
+        setFetchingDuration(true);
+        try {
+            const res = await api.get(`/videos/bunny-info/${id}`);
+            lastFetchedBunnyId.current = id;
+            setForm(p => ({ ...p, duration: res.data.duration }));
+            setDurationHint('✓ Duración obtenida de Bunny automáticamente');
+        } catch (err) {
+            setDurationHint(err.response?.data?.message || 'No se pudo obtener la duración, ingrésala manualmente');
+        } finally {
+            setFetchingDuration(false);
+        }
     };
 
     const handleSubmit = async e => {
@@ -162,7 +189,14 @@ export default function AdminVideos() {
 
                         <div className="admin-form__field">
                             <label>Bunny Video ID *</label>
-                            <input name="bunnyVideoId" value={form.bunnyVideoId} onChange={handleChange} required placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+                            <input
+                                name="bunnyVideoId"
+                                value={form.bunnyVideoId}
+                                onChange={handleChange}
+                                onBlur={handleBunnyIdBlur}
+                                required
+                                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                            />
                         </div>
 
                         <div className="admin-form__field">
@@ -191,8 +225,9 @@ export default function AdminVideos() {
                                 <input type="number" name="order" value={form.order} onChange={handleChange} min={1} required />
                             </div>
                             <div className="admin-form__field">
-                                <label>Duración (segundos)</label>
+                                <label>Duración (segundos){fetchingDuration && ' — consultando Bunny…'}</label>
                                 <input type="number" name="duration" value={form.duration} onChange={handleChange} min={0} />
+                                {durationHint && <p className="admin-form__hint">{durationHint}</p>}
                             </div>
                         </div>
 

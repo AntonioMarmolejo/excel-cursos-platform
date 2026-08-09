@@ -336,7 +336,16 @@
     max-width: 480px;
     max-height: 90vh;
     overflow-y: auto;
+
+    /* Scrollbar delgado y con el estilo del tema, en vez del gris del sistema */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }
+
+.modal__box::-webkit-scrollbar { width: 8px; }
+.modal__box::-webkit-scrollbar-track { background: transparent; }
+.modal__box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.modal__box::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
 .modal__box--wide { max-width: 640px; }
 
