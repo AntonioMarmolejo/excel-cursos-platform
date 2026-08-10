@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
-import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import VideoPlayer from '../components/VideoPlayer';
 import VideoList from '../components/VideoList';
 import LockedOverlay from '../components/LockedOverlay';
@@ -284,6 +284,8 @@ export default function CoursePage() {
                         </div>
                     </aside>
                 </div>
+
+                <Footer />
             </div>
         );
     }

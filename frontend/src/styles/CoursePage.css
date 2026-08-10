@@ -145,6 +145,7 @@
   margin: 0 auto;
   padding: 1.75rem 2.5rem 3rem;
   align-items: start;
+  flex: 1;
 }
 
 .course-page__overview-main {

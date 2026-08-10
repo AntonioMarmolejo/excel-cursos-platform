@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import api, { resolveFileUrl } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import Certificate from '../components/Certificate';
 import '../styles/ProfilePage.css';
 
@@ -396,6 +397,8 @@ export default function ProfilePage() {
                     )}
                 </main>
             </div>
+
+            <Footer />
         </div>
     );
 }

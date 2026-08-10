@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 import { resolveCourseThumbnail } from '../utils/courseThumbnails';
 import '../styles/HomePage.css';
 
@@ -170,6 +171,8 @@ export default function HomePage() {
                     )}
                 </section>
             </main>
+
+            <Footer />
         </div>
     );
 }
