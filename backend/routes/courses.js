@@ -1,32 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const ctrl = require('../controllers/courseController');
-const { protect, adminOnly } = require('../middleware/auth');
+const { protect, optionalAuth, instructorOrAdmin } = require('../middleware/auth');
 const { uploadCourseThumbnail } = require('../middleware/upload');
 
 // Público (con usuario opcional para saber si tiene acceso)
-router.get('/', (req, res, next) => { require('../middleware/auth').protect(req, res, () => next()); next; }, ctrl.getAll);
-router.get('/:slug', (req, res, next) => {
-    // Intentar autenticar sin obligar (para que el usuario vea qué está bloqueado)
-    const { protect } = require('../middleware/auth');
-    const jwt = require('jsonwebtoken');
-    const User = require('../models/User');
-    const token = req.headers.authorization?.split(' ')[1];
-    if (token) {
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            User.findById(decoded.id).then(user => {
-                req.user = user;
-                next();
-            }).catch(() => next());
-        } catch { next(); }
-    } else { next(); }
-}, ctrl.getOne);
+router.get('/', ctrl.getAll);
+router.get('/categories', ctrl.getCategories);
+router.get('/mine', protect, instructorOrAdmin, ctrl.getMine);
+router.get('/:slug', optionalAuth, ctrl.getOne);
 
-// Admin
-router.post('/', protect, adminOnly, ctrl.create);
-router.put('/:id', protect, adminOnly, ctrl.update);
-router.put('/:id/thumbnail', protect, adminOnly, uploadCourseThumbnail.single('thumbnail'), ctrl.uploadThumbnail);
-router.delete('/:id', protect, adminOnly, ctrl.remove);
+// Instructor (dueño del curso) o admin — la propiedad se valida en el controlador
+router.post('/', protect, instructorOrAdmin, ctrl.create);
+router.put('/:id', protect, instructorOrAdmin, ctrl.update);
+router.post('/:id/submit', protect, instructorOrAdmin, ctrl.submitForReview);
+router.put('/:id/thumbnail', protect, instructorOrAdmin, uploadCourseThumbnail.single('thumbnail'), ctrl.uploadThumbnail);
+router.delete('/:id', protect, instructorOrAdmin, ctrl.remove);
 
 module.exports = router;

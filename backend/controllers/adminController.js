@@ -3,12 +3,87 @@ const Course = require('../models/Course');
 const Progress = require('../models/Progress');
 const Comment = require('../models/Comment');
 
+const { sendInstructorDecisionEmail, sendCourseReviewEmail } = require('../utils/mailer');
+
+// Los correos de notificación no deben romper la acción del admin si el SMTP falla
+const notify = (promise) => promise.catch(err => console.error('Error enviando correo:', err.message));
+
 // ── GET /api/admin/courses ────────────────────────
-// Todos los cursos incluyendo no publicados
+// Todos los cursos incluyendo no publicados. Filtro opcional: ?reviewStatus=pending
 exports.getAllCourses = async (req, res) => {
     try {
-        const courses = await Course.find().sort('order');
+        const query = {};
+        if (req.query.reviewStatus) query.reviewStatus = req.query.reviewStatus;
+        const courses = await Course.find(query)
+            .sort('order')
+            .populate('instructor', 'name email');
         res.json({ success: true, courses });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ── PUT /api/admin/courses/:id/review ─────────────
+// Aprobar (publica) o rechazar un curso enviado por un instructor
+exports.reviewCourse = async (req, res) => {
+    try {
+        const { action, reason = '' } = req.body;
+        if (!['approve', 'reject'].includes(action))
+            return res.status(400).json({ success: false, message: 'Acción inválida' });
+
+        const course = await Course.findById(req.params.id).populate('instructor', 'name email');
+        if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+
+        const approved = action === 'approve';
+        course.reviewStatus = approved ? 'approved' : 'rejected';
+        course.isPublished = approved;
+        course.rejectionReason = approved ? '' : reason.trim();
+        await course.save();
+
+        if (course.instructor?.email)
+            notify(sendCourseReviewEmail(course.instructor.email, course.instructor.name, course.title, approved, course.rejectionReason));
+
+        res.json({ success: true, course });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ── GET /api/admin/instructor-applications ────────
+// Solicitudes de instructor. Filtro: ?status=pending (por defecto)
+exports.getInstructorApplications = async (req, res) => {
+    try {
+        const status = req.query.status || 'pending';
+        const users = await User.find({ 'instructorProfile.status': status })
+            .select('name email avatar instructorProfile createdAt')
+            .sort('instructorProfile.appliedAt');
+        res.json({ success: true, applications: users });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ── PUT /api/admin/instructor-applications/:id ────
+exports.reviewInstructorApplication = async (req, res) => {
+    try {
+        const { action, reason = '' } = req.body;
+        if (!['approve', 'reject'].includes(action))
+            return res.status(400).json({ success: false, message: 'Acción inválida' });
+
+        const user = await User.findById(req.params.id);
+        if (!user) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        if (user.instructorProfile?.status !== 'pending')
+            return res.status(400).json({ success: false, message: 'Esta solicitud no está pendiente' });
+
+        const approved = action === 'approve';
+        user.instructorProfile.status = approved ? 'approved' : 'rejected';
+        user.instructorProfile.reviewedAt = new Date();
+        user.instructorProfile.rejectionReason = approved ? '' : reason.trim();
+        if (approved && user.role === 'user') user.role = 'instructor';
+        await user.save({ validateBeforeSave: false });
+
+        notify(sendInstructorDecisionEmail(user.email, user.name, approved, user.instructorProfile.rejectionReason));
+        res.json({ success: true, user });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -63,10 +138,13 @@ exports.toggleComment = async (req, res) => {
 // ── GET /api/admin/stats ──────────────────────────
 exports.getStats = async (req, res) => {
     try {
-        const [totalUsers, activeSubscriptions, totalCourses, recentComments] = await Promise.all([
-            User.countDocuments({ role: 'user' }),
+        const [totalUsers, activeSubscriptions, totalCourses, totalInstructors, pendingApplications, pendingCourses, recentComments] = await Promise.all([
+            User.countDocuments({ role: { $in: ['user', 'instructor'] } }),
             User.countDocuments({ 'subscription.status': 'active' }),
             Course.countDocuments({ isPublished: true }),
+            User.countDocuments({ role: 'instructor' }),
+            User.countDocuments({ 'instructorProfile.status': 'pending' }),
+            Course.countDocuments({ reviewStatus: 'pending' }),
             Comment.find({ isHidden: false }).sort('-createdAt').limit(5)
                 .populate('user', 'name')
                 .populate('video', 'title'),
@@ -75,7 +153,7 @@ exports.getStats = async (req, res) => {
         // Nuevos usuarios últimos 30 días
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         const newUsers = await User.countDocuments({
-            role: 'user',
+            role: { $in: ['user', 'instructor'] },
             createdAt: { $gte: thirtyDaysAgo },
         });
 
@@ -91,6 +169,9 @@ exports.getStats = async (req, res) => {
                 totalUsers,
                 activeSubscriptions,
                 totalCourses,
+                totalInstructors,
+                pendingApplications,
+                pendingCourses,
                 newUsersLast30Days: newUsers,
                 planDistribution: planDist,
                 recentComments,
@@ -105,7 +186,7 @@ exports.getStats = async (req, res) => {
 exports.getUsers = async (req, res) => {
     try {
         const { page = 1, limit = 20, search = '' } = req.query;
-        const query = { role: 'user' };
+        const query = { role: { $in: ['user', 'instructor'] } };
         if (search) {
             query.$or = [
                 { name: { $regex: search, $options: 'i' } },
@@ -115,7 +196,7 @@ exports.getUsers = async (req, res) => {
 
         const [users, total] = await Promise.all([
             User.find(query)
-                .select('name email subscription createdAt lastLogin')
+                .select('name email role subscription createdAt lastLogin')
                 .sort('-createdAt')
                 .skip((page - 1) * limit)
                 .limit(Number(limit)),

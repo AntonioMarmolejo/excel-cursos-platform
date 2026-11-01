@@ -10,6 +10,7 @@ const videoRoutes = require('./routes/videos');
 const commentRoutes = require('./routes/comments');
 const progressRoutes = require('./routes/progress');
 const adminRoutes = require('./routes/admin');
+const instructorRoutes = require('./routes/instructors');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/videos', videoRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/instructors', instructorRoutes);
 
 // ── Health check ──────────────────────────────────
 app.get('/api/health', (req, res) => {

@@ -25,6 +25,30 @@ const protect = async (req, res, next) => {
     }
 };
 
+// ── Autenticación opcional (rutas públicas que cambian según el usuario) ──
+const optionalAuth = async (req, res, next) => {
+    const token = req.headers.authorization?.startsWith('Bearer ')
+        ? req.headers.authorization.split(' ')[1]
+        : null;
+    if (!token) return next();
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = await User.findById(decoded.id).select('-password');
+    } catch {
+        // Token inválido: se trata como visitante anónimo
+    }
+    next();
+};
+
+// ── Instructores aprobados o admins ───────────────
+const instructorOrAdmin = (req, res, next) => {
+    if (!['instructor', 'admin'].includes(req.user?.role)) {
+        return res.status(403).json({ success: false, message: 'Acceso restringido a instructores' });
+    }
+    next();
+};
+
 // ── Solo admins ───────────────────────────────────
 const adminOnly = (req, res, next) => {
     if (req.user?.role !== 'admin') {
@@ -46,4 +70,4 @@ const requireCourseAccess = (req, res, next) => {
     next();
 };
 
-module.exports = { protect, adminOnly, requireCourseAccess };
+module.exports = { protect, optionalAuth, instructorOrAdmin, adminOnly, requireCourseAccess };

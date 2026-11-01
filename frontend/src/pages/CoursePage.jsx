@@ -163,12 +163,12 @@ export default function CoursePage() {
                             <div className="course-page__instructor-avatar">{course.instructor?.name?.[0]?.toUpperCase() || 'A'}</div>
                             <div>
                                 <div className="course-page__hero-label">Instructor</div>
-                                <div className="course-page__instructor-name">{course.instructor?.name}</div>
+                                <Link to={`/instructores/${course.instructor?._id}`} className="course-page__instructor-name">{course.instructor?.name}</Link>
                             </div>
                         </div>
                         <div>
                             <div className="course-page__hero-label">Categoría</div>
-                            <div className="course-page__hero-value">{LEVEL_LABEL[course.level] || course.level}</div>
+                            <div className="course-page__hero-value">{course.categoryName || '—'}</div>
                         </div>
                     </div>
 
@@ -254,9 +254,14 @@ export default function CoursePage() {
                                     {course.instructor?.name?.[0]?.toUpperCase() || 'A'}
                                 </div>
                                 <div>
-                                    <h3 className="course-page__instructor-tab-name">{course.instructor?.name}</h3>
+                                    <h3 className="course-page__instructor-tab-name">
+                                        <Link to={`/instructores/${course.instructor?._id}`}>{course.instructor?.name}</Link>
+                                    </h3>
+                                    {course.instructor?.instructorProfile?.headline && (
+                                        <p className="course-page__hero-label">{course.instructor.instructorProfile.headline}</p>
+                                    )}
                                     <p className="course-page__instructor-tab-bio">
-                                        {course.instructor?.bio || 'Este instructor aún no ha agregado una biografía.'}
+                                        {course.instructor?.instructorProfile?.bio || 'Este instructor aún no ha agregado una biografía.'}
                                     </p>
                                 </div>
                             </div>

@@ -4,11 +4,32 @@ const Course = require('../models/Course');
 const Video = require('../models/Video');
 const Progress = require('../models/Progress');
 
+const CATEGORIES = require('../config/categories');
+
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// ── GET /api/courses/categories ───────────────────
+exports.getCategories = (req, res) => {
+    res.json({ success: true, categories: CATEGORIES });
+};
+
 // ── GET /api/courses ──────────────────────────────
-// Catálogo público (solo publicados)
+// Catálogo público (solo publicados). Filtros: ?category=&level=&instructor=&q=
 exports.getAll = async (req, res) => {
     try {
-        const courses = await Course.find({ isPublished: true }).sort('order');
+        const { category, level, instructor, q } = req.query;
+        const query = { isPublished: true };
+        if (category) query.category = category;
+        if (level) query.level = level;
+        if (instructor) query.instructor = instructor;
+        if (q?.trim()) {
+            const rx = new RegExp(escapeRegex(q.trim()), 'i');
+            query.$or = [{ title: rx }, { description: rx }];
+        }
+
+        const courses = await Course.find(query)
+            .sort('order')
+            .populate('instructor', Course.INSTRUCTOR_FIELDS);
         res.json({ success: true, courses });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -19,8 +40,12 @@ exports.getAll = async (req, res) => {
 // Detalle del curso + lista de videos (con info de acceso para el usuario)
 exports.getOne = async (req, res) => {
     try {
-        const course = await Course.findOne({ slug: req.params.slug, isPublished: true });
-        if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+        const course = await Course.findOne({ slug: req.params.slug })
+            .populate('instructor', Course.INSTRUCTOR_FIELDS);
+        // Los cursos no publicados solo los ve su dueño o el admin (vista previa)
+        const canManage = course?.canBeManagedBy(req.user);
+        if (!course || (!course.isPublished && !canManage))
+            return res.status(404).json({ success: false, message: 'Curso no encontrado' });
 
         const videos = await Video.find({ course: course._id, isPublished: true })
             .sort('order')
@@ -31,7 +56,7 @@ exports.getOne = async (req, res) => {
         let hasAccess = false;
 
         if (req.user) {
-            hasAccess = req.user.hasCourseAccess(course._id);
+            hasAccess = canManage || req.user.hasCourseAccess(course._id);
             progress = await Progress.findOne({ user: req.user._id, course: course._id });
         }
 
@@ -73,24 +98,84 @@ exports.getOne = async (req, res) => {
     }
 };
 
-// ── POST /api/courses (admin) ─────────────────────
+// Campos que cada rol puede escribir en un curso
+const INSTRUCTOR_FIELDS = ['title', 'slug', 'description', 'level', 'category', 'price', 'thumbnail'];
+const ADMIN_FIELDS = [...INSTRUCTOR_FIELDS, 'order', 'isPublished', 'reviewStatus', 'rejectionReason', 'instructor'];
+
+const pickAllowed = (body, user) => {
+    const allowed = user.role === 'admin' ? ADMIN_FIELDS : INSTRUCTOR_FIELDS;
+    return Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)));
+};
+
+// ── GET /api/courses/mine (instructor) ────────────
+// Cursos del instructor autenticado, en cualquier estado
+exports.getMine = async (req, res) => {
+    try {
+        const courses = await Course.find({ instructor: req.user._id }).sort('-updatedAt');
+        res.json({ success: true, courses });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ── POST /api/courses (instructor/admin) ──────────
 exports.create = async (req, res) => {
     try {
-        const course = await Course.create(req.body);
+        const data = pickAllowed(req.body, req.user);
+        if (req.user.role !== 'admin' || !data.instructor) data.instructor = req.user._id;
+        // Los cursos del admin pueden publicarse directo; los de instructores nacen en borrador
+        if (req.user.role !== 'admin') {
+            data.reviewStatus = 'draft';
+            data.isPublished = false;
+        } else if (data.isPublished) {
+            data.reviewStatus = 'approved';
+        }
+
+        const course = await Course.create(data);
         res.status(201).json({ success: true, course });
     } catch (err) {
         res.status(400).json({ success: false, message: err.message });
     }
 };
 
-// ── PUT /api/courses/:id (admin) ──────────────────
+// ── PUT /api/courses/:id (dueño/admin) ────────────
 exports.update = async (req, res) => {
     try {
-        const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const course = await Course.findById(req.params.id);
         if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+        if (!course.canBeManagedBy(req.user))
+            return res.status(403).json({ success: false, message: 'No puedes editar este curso' });
+
+        const data = pickAllowed(req.body, req.user);
+        if (req.user.role === 'admin' && data.isPublished === true) data.reviewStatus = 'approved';
+
+        course.set(data);
+        await course.save();
         res.json({ success: true, course });
     } catch (err) {
         res.status(400).json({ success: false, message: err.message });
+    }
+};
+
+// ── POST /api/courses/:id/submit (dueño) ──────────
+// El instructor envía su curso a revisión del admin
+exports.submitForReview = async (req, res) => {
+    try {
+        const course = await Course.findById(req.params.id);
+        if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+        if (!course.canBeManagedBy(req.user))
+            return res.status(403).json({ success: false, message: 'No puedes enviar este curso' });
+        if (!['draft', 'rejected'].includes(course.reviewStatus))
+            return res.status(400).json({ success: false, message: 'Este curso ya fue enviado o aprobado' });
+        if (course.totalVideos < 1)
+            return res.status(400).json({ success: false, message: 'Agrega al menos un video publicado antes de enviarlo' });
+
+        course.reviewStatus = 'pending';
+        course.rejectionReason = '';
+        await course.save();
+        res.json({ success: true, course });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
 };
 
@@ -102,6 +187,10 @@ exports.uploadThumbnail = async (req, res) => {
 
         const course = await Course.findById(req.params.id);
         if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+        if (!course.canBeManagedBy(req.user)) {
+            fs.unlink(req.file.path, () => { });
+            return res.status(403).json({ success: false, message: 'No puedes editar este curso' });
+        }
 
         // Borrar la portada anterior solo si era un archivo subido localmente (no una URL externa)
         if (course.thumbnail?.startsWith('/uploads/')) {
@@ -118,10 +207,18 @@ exports.uploadThumbnail = async (req, res) => {
     }
 };
 
-// ── DELETE /api/courses/:id (admin) ───────────────
+// ── DELETE /api/courses/:id (dueño/admin) ─────────
 exports.remove = async (req, res) => {
     try {
-        await Course.findByIdAndDelete(req.params.id);
+        const course = await Course.findById(req.params.id);
+        if (!course) return res.status(404).json({ success: false, message: 'Curso no encontrado' });
+        if (!course.canBeManagedBy(req.user))
+            return res.status(403).json({ success: false, message: 'No puedes eliminar este curso' });
+        // Un curso publicado puede tener alumnos que lo compraron: solo el admin lo elimina
+        if (course.isPublished && req.user.role !== 'admin')
+            return res.status(400).json({ success: false, message: 'Un curso publicado solo puede eliminarlo un administrador' });
+
+        await course.deleteOne();
         await Video.deleteMany({ course: req.params.id });
         res.json({ success: true, message: 'Curso eliminado' });
     } catch (err) {

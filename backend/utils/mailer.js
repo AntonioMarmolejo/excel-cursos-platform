@@ -52,3 +52,44 @@ exports.sendPasswordResetEmail = async (email, name, token) => {
     `),
   });
 };
+
+const escapeHtml = (str = '') =>
+  String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+exports.sendInstructorDecisionEmail = async (email, name, approved, reason) => {
+  const url = `${process.env.CLIENT_URL}/instructor`;
+  await transporter.sendMail({
+    from: `"Cursos Excel" <${process.env.SMTP_USER}>`,
+    to: email,
+    subject: approved ? '¡Ya eres instructor!' : 'Sobre tu solicitud de instructor',
+    html: baseTemplate(approved ? `
+      <p>Hola <strong>${escapeHtml(name)}</strong>,</p>
+      <p>Tu solicitud fue aprobada. Ya puedes crear y publicar tus cursos:</p>
+      <a href="${url}" style="display:inline-block;padding:12px 24px;background:#1a7f5a;color:#fff;text-decoration:none;border-radius:6px;margin:16px 0;">
+        Ir a mi panel de instructor
+      </a>
+    ` : `
+      <p>Hola <strong>${escapeHtml(name)}</strong>,</p>
+      <p>Por ahora no pudimos aprobar tu solicitud de instructor.</p>
+      ${reason ? `<p><strong>Motivo:</strong> ${escapeHtml(reason)}</p>` : ''}
+      <p>Puedes corregirla y volver a enviarla cuando quieras.</p>
+    `),
+  });
+};
+
+exports.sendCourseReviewEmail = async (email, name, courseTitle, approved, reason) => {
+  await transporter.sendMail({
+    from: `"Cursos Excel" <${process.env.SMTP_USER}>`,
+    to: email,
+    subject: approved ? `Tu curso "${courseTitle}" fue publicado` : `Tu curso "${courseTitle}" necesita cambios`,
+    html: baseTemplate(approved ? `
+      <p>Hola <strong>${escapeHtml(name)}</strong>,</p>
+      <p>Tu curso <strong>${escapeHtml(courseTitle)}</strong> fue aprobado y ya aparece en el catálogo.</p>
+    ` : `
+      <p>Hola <strong>${escapeHtml(name)}</strong>,</p>
+      <p>Revisamos tu curso <strong>${escapeHtml(courseTitle)}</strong> y necesita algunos cambios antes de publicarse.</p>
+      ${reason ? `<p><strong>Comentarios:</strong> ${escapeHtml(reason)}</p>` : ''}
+      <p>Cuando lo corrijas, envíalo de nuevo a revisión desde tu panel.</p>
+    `),
+  });
+};

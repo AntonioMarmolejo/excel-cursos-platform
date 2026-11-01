@@ -6,11 +6,17 @@ import AdminModal from '../../components/AdminModal';
 const EMPTY = {
     title: '', slug: '', description: '', level: 'basico',
     thumbnail: '', priceLifetime: 0, order: 0,
-    instructorName: 'Administrador', instructorBio: '', isPublished: false,
+    category: 'otros', isPublished: false,
+};
+
+const REVIEW_BADGE = {
+    pending: ['badge--yellow', 'En revisión'],
+    rejected: ['badge--red', 'Rechazado'],
 };
 
 export default function AdminCourses() {
     const [courses, setCourses] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [editing, setEditing] = useState(null);
     const [form, setForm] = useState(EMPTY);
     const [saving, setSaving] = useState(false);
@@ -20,7 +26,10 @@ export default function AdminCourses() {
     const thumbInputRef = useRef(null);
 
     const load = () => api.get('/admin/courses').then(r => setCourses(r.data.courses)).catch(() => {});
-    useEffect(() => { load(); }, []);
+    useEffect(() => {
+        load();
+        api.get('/courses/categories').then(r => setCategories(r.data.categories)).catch(() => {});
+    }, []);
 
     const openCreate = () => { setForm(EMPTY); setEditing({}); setError(''); };
     const openEdit = (c) => {
@@ -28,8 +37,7 @@ export default function AdminCourses() {
             title: c.title, slug: c.slug, description: c.description,
             level: c.level, thumbnail: c.thumbnail || '',
             priceLifetime: c.price?.lifetime ?? 0,
-            order: c.order, instructorName: c.instructor?.name || 'Administrador',
-            instructorBio: c.instructor?.bio || '',
+            order: c.order, category: c.category || 'otros',
             isPublished: c.isPublished,
         });
         setEditing(c);
@@ -48,8 +56,7 @@ export default function AdminCourses() {
             title: form.title, slug: form.slug, description: form.description,
             level: form.level, thumbnail: form.thumbnail || undefined,
             price: { lifetime: Number(form.priceLifetime) },
-            order: Number(form.order), isPublished: form.isPublished,
-            instructor: { name: form.instructorName, bio: form.instructorBio },
+            order: Number(form.order), category: form.category, isPublished: form.isPublished,
         };
         try {
             editing._id
@@ -103,25 +110,30 @@ export default function AdminCourses() {
                 <table className="admin-table__table">
                     <thead>
                         <tr>
-                            <th>#</th><th>Título</th><th>Nivel</th>
+                            <th>#</th><th>Título</th><th>Instructor</th><th>Nivel</th>
                             <th>Precio</th><th>Videos</th><th>Estado</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {courses.length === 0 && (
-                            <tr><td colSpan={7} className="admin-empty">No hay cursos</td></tr>
+                            <tr><td colSpan={8} className="admin-empty">No hay cursos</td></tr>
                         )}
                         {courses.map(c => (
                             <tr key={c._id}>
                                 <td>{c.order}</td>
                                 <td className="admin-table__cell--title">{c.title}</td>
+                                <td>{c.instructor?.name || '—'}</td>
                                 <td><span className="badge badge--gray">{c.level}</span></td>
                                 <td>${c.price?.lifetime?.toFixed(2)}</td>
                                 <td>{c.totalVideos}</td>
                                 <td>
-                                    <span className={`badge ${c.isPublished ? 'badge--green' : 'badge--yellow'}`}>
-                                        {c.isPublished ? 'Publicado' : 'Borrador'}
-                                    </span>
+                                    {c.isPublished ? (
+                                        <span className="badge badge--green">Publicado</span>
+                                    ) : (
+                                        <span className={`badge ${REVIEW_BADGE[c.reviewStatus]?.[0] || 'badge--gray'}`}>
+                                            {REVIEW_BADGE[c.reviewStatus]?.[1] || 'Borrador'}
+                                        </span>
+                                    )}
                                 </td>
                                 <td>
                                     <div className="admin-table__row-actions">
@@ -180,14 +192,11 @@ export default function AdminCourses() {
                                 <input type="number" name="order" value={form.order} onChange={handleChange} min={0} />
                             </div>
                             <div className="admin-form__field">
-                                <label>Instructor</label>
-                                <input name="instructorName" value={form.instructorName} onChange={handleChange} />
+                                <label>Categoría</label>
+                                <select name="category" value={form.category} onChange={handleChange}>
+                                    {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                                </select>
                             </div>
-                        </div>
-
-                        <div className="admin-form__field">
-                            <label>Bio del instructor</label>
-                            <textarea name="instructorBio" value={form.instructorBio} onChange={handleChange} placeholder="Se muestra en la pestaña &quot;Instructor&quot; del curso" />
                         </div>
 
                         <div className="admin-form__field">

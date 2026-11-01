@@ -2,6 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Course = require('./models/Course');
 const Video = require('./models/Video');
+const User = require('./models/User');
 
 const videos = [
     { title: 'Barra de Herramientas de acceso rápido', bunnyVideoId: 'd33b03d8-a2a1-4a09-9c98-eeb56f3476da', order: 1 },
@@ -15,7 +16,12 @@ async function run() {
 
     let course = await Course.findOne({ slug: 'excel-basico' });
     if (!course) {
+        const admin = await User.findOne({ role: 'admin' }).sort('createdAt');
+        if (!admin) throw new Error('Crea primero un usuario admin (POST /api/admin/create-admin)');
         course = await Course.create({
+            instructor: admin._id,
+            category: 'ofimatica',
+            reviewStatus: 'approved',
             title: 'Excel Básico',
             slug: 'excel-basico',
             description: 'Aprende los fundamentos de Excel desde cero: la interfaz, la cinta de opciones y la barra de herramientas.',
