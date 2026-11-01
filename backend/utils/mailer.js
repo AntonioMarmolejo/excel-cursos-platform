@@ -10,6 +10,10 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// CLIENT_URL puede traer varios orígenes separados por coma (CORS):
+// los enlaces de los correos usan el primero, que debe ser el dominio principal
+const CLIENT_URL = (process.env.CLIENT_URL || 'http://localhost:5173').split(',')[0].trim();
+
 const baseTemplate = (content) => `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
     <h2 style="color: #1a7f5a;">eccursos</h2>
@@ -20,7 +24,7 @@ const baseTemplate = (content) => `
 `;
 
 exports.sendVerificationEmail = async (email, name, token) => {
-  const url = `${process.env.CLIENT_URL}/verificar/${token}`;
+  const url = `${CLIENT_URL}/verificar/${token}`;
   await transporter.sendMail({
     from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
@@ -37,7 +41,7 @@ exports.sendVerificationEmail = async (email, name, token) => {
 };
 
 exports.sendPasswordResetEmail = async (email, name, token) => {
-  const url = `${process.env.CLIENT_URL}/reset-password/${token}`;
+  const url = `${CLIENT_URL}/reset-password/${token}`;
   await transporter.sendMail({
     from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
@@ -57,7 +61,7 @@ const escapeHtml = (str = '') =>
   String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 exports.sendInstructorDecisionEmail = async (email, name, approved, reason) => {
-  const url = `${process.env.CLIENT_URL}/instructor`;
+  const url = `${CLIENT_URL}/instructor`;
   await transporter.sendMail({
     from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
