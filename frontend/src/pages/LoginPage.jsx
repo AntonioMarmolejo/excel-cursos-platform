@@ -3,6 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import PasswordInput from '../components/PasswordInput';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 import { BRAND_NAME } from '../config/brand';
 
 export default function LoginPage() {
@@ -18,6 +20,11 @@ export default function LoginPage() {
 
   const handleChange = (e) =>
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleGoogleSuccess = (data) => {
+    login(data.token, data.user);
+    navigate(from, { replace: true });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,9 +69,8 @@ export default function LoginPage() {
 
           <div className="auth-page__group">
             <label htmlFor="password">Contraseña</label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -77,6 +83,8 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Iniciar sesión'}
           </button>
         </form>
+
+        <GoogleSignInButton onSuccess={handleGoogleSuccess} onError={setError} text="signin_with" />
 
         <div className="auth-page__links">
           <Link to="/olvide-contrasena">¿Olvidaste tu contraseña?</Link>

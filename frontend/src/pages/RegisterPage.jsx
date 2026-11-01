@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import PasswordInput from '../components/PasswordInput';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 import { BRAND_NAME } from '../config/brand';
 
 export default function RegisterPage() {
@@ -14,6 +16,11 @@ export default function RegisterPage() {
 
   const handleChange = (e) =>
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleGoogleSuccess = (data) => {
+    login(data.token, data.user);
+    navigate('/', { replace: true });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,9 +77,8 @@ export default function RegisterPage() {
 
           <div className="auth-page__group">
             <label htmlFor="password">Contraseña</label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -86,6 +92,8 @@ export default function RegisterPage() {
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
+
+        <GoogleSignInButton onSuccess={handleGoogleSuccess} onError={setError} text="signup_with" />
 
         <div className="auth-page__links">
           <span>¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></span>

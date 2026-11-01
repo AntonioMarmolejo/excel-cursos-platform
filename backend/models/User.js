@@ -29,7 +29,8 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ['user', 'instructor', 'admin'], default: 'user' },
-    avatar: { type: String },   // ruta relativa a /uploads/avatars/
+    avatar: { type: String },   // ruta relativa a /uploads/avatars/ o URL externa (foto de Google)
+    googleId: { type: String, unique: true, sparse: true },   // "sub" de la cuenta de Google vinculada
 
     instructorProfile: { type: instructorProfileSchema, default: () => ({}) },
 

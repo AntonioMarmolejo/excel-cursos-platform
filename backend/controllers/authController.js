@@ -2,8 +2,11 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const User = require('../models/User');
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/mailer');
+
+const googleClient = new OAuth2Client();
 
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
@@ -29,6 +32,65 @@ exports.register = async (req, res) => {
 
         const token = signToken(user._id);
         res.status(201).json({ success: true, token, user });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+// ── GET /api/auth/google/config ───────────────────
+// El Client ID de Google es público; se expone para no duplicarlo en el frontend
+exports.googleConfig = (req, res) => {
+    res.json({ success: true, clientId: process.env.GOOGLE_CLIENT_ID || null });
+};
+
+// ── POST /api/auth/google ─────────────────────────
+// Recibe el ID token que entrega el botón de Google, lo verifica y crea o
+// vincula la cuenta por email.
+exports.googleLogin = async (req, res) => {
+    try {
+        const clientId = process.env.GOOGLE_CLIENT_ID;
+        if (!clientId)
+            return res.status(500).json({ success: false, message: 'El inicio de sesión con Google no está configurado' });
+        if (!req.body.credential)
+            return res.status(400).json({ success: false, message: 'Falta la credencial de Google' });
+
+        let payload;
+        try {
+            const ticket = await googleClient.verifyIdToken({ idToken: req.body.credential, audience: clientId });
+            payload = ticket.getPayload();
+        } catch {
+            return res.status(401).json({ success: false, message: 'No se pudo verificar tu cuenta de Google' });
+        }
+        // Solo se confía en el email si Google lo verificó (evita tomar cuentas ajenas)
+        if (!payload?.email || !payload.email_verified)
+            return res.status(401).json({ success: false, message: 'Tu correo de Google no está verificado' });
+
+        const email = payload.email.toLowerCase();
+        let user = await User.findOne({ $or: [{ googleId: payload.sub }, { email }] });
+
+        if (!user) {
+            user = await User.create({
+                name: payload.name || email.split('@')[0],
+                email,
+                // Contraseña aleatoria: la cuenta entra con Google (puede crear una con "Olvidé mi contraseña")
+                password: crypto.randomBytes(32).toString('hex'),
+                googleId: payload.sub,
+                avatar: payload.picture,
+                isVerified: true,
+            });
+        } else {
+            // Cuenta existente con el mismo email: se vincula a Google
+            user.googleId = user.googleId || payload.sub;
+            user.isVerified = true;
+            user.verificationToken = undefined;
+            if (!user.avatar && payload.picture) user.avatar = payload.picture;
+        }
+
+        user.lastLogin = new Date();
+        await user.save({ validateBeforeSave: false });
+
+        const token = signToken(user._id);
+        res.json({ success: true, token, user });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }

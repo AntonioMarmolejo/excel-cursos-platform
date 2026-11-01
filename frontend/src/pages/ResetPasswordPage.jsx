@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import PasswordInput from '../components/PasswordInput';
 import { BRAND_NAME } from '../config/brand';
 
 export default function ResetPasswordPage() {
@@ -45,9 +46,8 @@ export default function ResetPasswordPage() {
 
           <div className="auth-page__group">
             <label htmlFor="password">Nueva contraseña</label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -60,9 +60,8 @@ export default function ResetPasswordPage() {
 
           <div className="auth-page__group">
             <label htmlFor="confirm">Confirmar contraseña</label>
-            <input
+            <PasswordInput
               id="confirm"
-              type="password"
               name="confirm"
               value={form.confirm}
               onChange={handleChange}

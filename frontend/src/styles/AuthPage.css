@@ -134,3 +134,75 @@
     text-align: center;
     color: var(--text-muted);
 }
+
+/* ── Campo de contraseña con botón mostrar/ocultar ── */
+.password-input {
+    position: relative;
+    display: flex;
+}
+
+.password-input input {
+    flex: 1;
+    min-width: 0;
+    padding-right: 44px;
+}
+
+.password-input__toggle {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+}
+
+.password-input__toggle:hover {
+    color: var(--primary);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.password-input__toggle:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+}
+
+/* ── Botón "Continuar con Google" ── */
+.google-signin {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.google-signin--hidden { display: none; }
+
+.google-signin__divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+}
+
+.google-signin__divider::before,
+.google-signin__divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.google-signin__button {
+    display: flex;
+    justify-content: center;
+    min-height: 44px;
+}

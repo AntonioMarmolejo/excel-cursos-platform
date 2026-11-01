@@ -9,6 +9,8 @@ const { uploadAvatar } = require('../middleware/upload');
 
 router.post('/register',                ctrl.register);
 router.post('/login',                   ctrl.login);
+router.get('/google/config',             ctrl.googleConfig);
+router.post('/google',                  ctrl.googleLogin);
 router.get('/me',         protect,      ctrl.getMe);
 router.put('/me/avatar',  protect,      uploadAvatar.single('avatar'), ctrl.uploadAvatar);
 router.put('/me/password', protect,     ctrl.updatePassword);
