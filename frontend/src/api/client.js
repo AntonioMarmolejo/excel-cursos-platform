@@ -27,7 +27,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (res) => res,
     (err) => {
-        if (err.response?.status === 401) {
+        // En login/registro un 401 significa "credenciales incorrectas": lo muestra el
+        // formulario. Solo se fuerza el login cuando expira la sesión en otra petición.
+        const isAuthForm = /\/auth\/(login|register)$/.test(err.config?.url || '');
+        if (err.response?.status === 401 && !isAuthForm && window.location.pathname !== '/login') {
             localStorage.removeItem('token');
             window.location.href = '/login';
         }

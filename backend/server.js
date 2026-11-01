@@ -18,8 +18,20 @@ const app = express();
 connectDB();
 
 // ── Middlewares globales ──────────────────────────
+// CLIENT_URL admite varios orígenes separados por coma (ej. dominio con y sin www).
+// En desarrollo se acepta además cualquier puerto de localhost, porque Vite cambia
+// de puerto (5174, 5175…) cuando el 5173 está ocupado por otro proyecto.
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
+    .split(',').map(o => o.trim()).filter(Boolean);
+const isDevLocalhost = (origin) =>
+    process.env.NODE_ENV !== 'production' && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, cb) => {
+        // Peticiones sin Origin (curl, Postman, mismo origen) no pasan por CORS
+        if (!origin || allowedOrigins.includes(origin) || isDevLocalhost(origin)) return cb(null, true);
+        cb(null, false);
+    },
     credentials: true,
 }));
 app.use(express.json());
