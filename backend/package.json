@@ -1,7 +1,7 @@
 {
-  "name": "excel-cursos-backend",
+  "name": "eccursos-backend",
   "version": "1.0.0",
-  "description": "Backend para plataforma de cursos de Excel",
+  "description": "Backend de eccursos.com, plataforma de cursos en línea multi-instructor",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

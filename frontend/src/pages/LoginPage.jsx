@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import { BRAND_NAME } from '../config/brand';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -12,7 +13,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from || '/cursos/excel-basico';
+  const from = location.state?.from || '/';
   const message = location.state?.message || '';
 
   const handleChange = (e) =>
@@ -37,7 +38,7 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-page__card">
         <div className="auth-page__logo">
-          <h1>Cursos de Excel</h1>
+          <h1>{BRAND_NAME}</h1>
           <p>Inicia sesión para continuar</p>
         </div>
 

@@ -1,4 +1,5 @@
 import '../styles/Certificate.css';
+import { BRAND_NAME } from '../config/brand';
 
 const fmtDate = (d) => new Date(d).toLocaleDateString('es', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -39,7 +40,7 @@ function buildPrintHtml({ studentName, courseTitle, completedAt }) {
 </head>
 <body>
   <div class="cert">
-    <div class="brand">Cursos de Excel</div>
+    <div class="brand">${BRAND_NAME}</div>
     <p class="title">Certificado de Finalización</p>
     <p class="subtitle">Se certifica que</p>
     <p class="student">${studentName}</p>
@@ -66,7 +67,7 @@ export default function Certificate({ studentName, courseTitle, completedAt }) {
   return (
     <div className="certificate">
       <div className="certificate__border">
-        <div className="certificate__brand">Cursos de Excel</div>
+        <div className="certificate__brand">{BRAND_NAME}</div>
         <p className="certificate__title">Certificado de Finalización</p>
         <p className="certificate__subtitle">Se certifica que</p>
         <p className="certificate__student">{studentName}</p>

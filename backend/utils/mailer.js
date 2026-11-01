@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const baseTemplate = (content) => `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-    <h2 style="color: #1a7f5a;">Cursos de Excel</h2>
+    <h2 style="color: #1a7f5a;">eccursos</h2>
     ${content}
     <hr style="border: 1px solid #eee; margin-top: 32px;"/>
     <p style="color: #888; font-size: 12px;">Si no solicitaste esto, puedes ignorar este correo.</p>
@@ -22,7 +22,7 @@ const baseTemplate = (content) => `
 exports.sendVerificationEmail = async (email, name, token) => {
   const url = `${process.env.CLIENT_URL}/verificar/${token}`;
   await transporter.sendMail({
-    from: `"Cursos Excel" <${process.env.SMTP_USER}>`,
+    from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
     subject: 'Verifica tu cuenta',
     html: baseTemplate(`
@@ -39,7 +39,7 @@ exports.sendVerificationEmail = async (email, name, token) => {
 exports.sendPasswordResetEmail = async (email, name, token) => {
   const url = `${process.env.CLIENT_URL}/reset-password/${token}`;
   await transporter.sendMail({
-    from: `"Cursos Excel" <${process.env.SMTP_USER}>`,
+    from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
     subject: 'Restablecer contraseña',
     html: baseTemplate(`
@@ -59,7 +59,7 @@ const escapeHtml = (str = '') =>
 exports.sendInstructorDecisionEmail = async (email, name, approved, reason) => {
   const url = `${process.env.CLIENT_URL}/instructor`;
   await transporter.sendMail({
-    from: `"Cursos Excel" <${process.env.SMTP_USER}>`,
+    from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
     subject: approved ? '¡Ya eres instructor!' : 'Sobre tu solicitud de instructor',
     html: baseTemplate(approved ? `
@@ -79,7 +79,7 @@ exports.sendInstructorDecisionEmail = async (email, name, approved, reason) => {
 
 exports.sendCourseReviewEmail = async (email, name, courseTitle, approved, reason) => {
   await transporter.sendMail({
-    from: `"Cursos Excel" <${process.env.SMTP_USER}>`,
+    from: `"eccursos" <${process.env.SMTP_USER}>`,
     to: email,
     subject: approved ? `Tu curso "${courseTitle}" fue publicado` : `Tu curso "${courseTitle}" necesita cambios`,
     html: baseTemplate(approved ? `

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
+import { BRAND_NAME, BRAND_DOMAIN } from '../config/brand';
 
 const YEAR = new Date().getFullYear();
 
@@ -9,8 +10,8 @@ export default function Footer() {
             <div className="footer__inner">
                 <div className="footer__top">
                     <Link to="/" className="footer__brand">
-                        <span className="footer__brand-icon">📊</span>
-                        Cursos de Excel
+                        <span className="footer__brand-icon">🎓</span>
+                        {BRAND_NAME}
                     </Link>
 
                     <div className="footer__columns">
@@ -19,6 +20,7 @@ export default function Footer() {
                             <ul className="footer__link-list">
                                 <li><Link to="/">Inicio</Link></li>
                                 <li><Link to="/perfil">Mi Perfil</Link></li>
+                                <li><Link to="/ser-instructor">Enseña en {BRAND_NAME}</Link></li>
                             </ul>
                         </div>
 
@@ -44,7 +46,7 @@ export default function Footer() {
 
                 <div className="footer__bottom">
                     <span className="footer__copyright">
-                        © {YEAR} <Link to="/">Cursos de Excel</Link>. Todos los derechos reservados.
+                        © {YEAR} <Link to="/">{BRAND_DOMAIN}</Link>. Todos los derechos reservados.
                     </span>
 
                     <div className="footer__socials">

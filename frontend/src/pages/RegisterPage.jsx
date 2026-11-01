@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import { BRAND_NAME } from '../config/brand';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -21,7 +22,7 @@ export default function RegisterPage() {
     try {
       const { data } = await api.post('/auth/register', form);
       login(data.token, data.user);
-      navigate('/cursos/excel-basico', { replace: true });
+      navigate('/', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrarse');
     } finally {
@@ -33,7 +34,7 @@ export default function RegisterPage() {
     <div className="auth-page">
       <div className="auth-page__card">
         <div className="auth-page__logo">
-          <h1>Cursos de Excel</h1>
+          <h1>{BRAND_NAME}</h1>
           <p>Crea tu cuenta gratuita</p>
         </div>
 

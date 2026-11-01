@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { resolveFileUrl } from '../api/client';
 import '../styles/Navbar.css';
+import { BRAND_NAME } from '../config/brand';
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -26,7 +27,15 @@ export default function Navbar() {
 
     return (
         <nav className="navbar">
-            <Link to="/" className="navbar__logo" onClick={() => setOpen(false)}>Cursos de Excel</Link>
+            <Link to="/" className="navbar__logo" onClick={() => setOpen(false)}>{BRAND_NAME}</Link>
+
+            {!user && (
+                <div className="navbar__guest">
+                    <Link to="/ser-instructor" className="navbar__link">Enseña en {BRAND_NAME}</Link>
+                    <Link to="/login" className="navbar__btn">Iniciar sesión</Link>
+                    <Link to="/registro" className="navbar__btn navbar__btn--primary">Crear cuenta</Link>
+                </div>
+            )}
 
             {user && (
                 <div className="navbar__menu" ref={menuRef}>
@@ -58,6 +67,24 @@ export default function Navbar() {
                                 </svg>
                                 Mi Perfil
                             </Link>
+
+                            {['instructor', 'admin'].includes(user.role) ? (
+                                <Link to="/instructor" className="navbar__dropdown-item" onClick={() => setOpen(false)}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polygon points="23 7 16 12 23 17 23 7" />
+                                        <rect x="1" y="5" width="15" height="14" rx="2" />
+                                    </svg>
+                                    Panel Instructor
+                                </Link>
+                            ) : (
+                                <Link to="/ser-instructor" className="navbar__dropdown-item" onClick={() => setOpen(false)}>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M22 10 12 5 2 10l10 5 10-5z" />
+                                        <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                    </svg>
+                                    Enseña en {BRAND_NAME}
+                                </Link>
+                            )}
 
                             {user.role === 'admin' && (
                                 <Link to="/admin" className="navbar__dropdown-item" onClick={() => setOpen(false)}>

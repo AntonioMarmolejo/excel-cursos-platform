@@ -1,18 +1,31 @@
 import { useState } from 'react';
 import { NavLink, Outlet, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import '../../styles/admin.css';
+import { useAuth } from '../context/AuthContext';
+import { BRAND_NAME } from '../config/brand';
+import '../styles/admin.css';
 
-const NAV = [
+const ADMIN_NAV = [
     { to: '/admin',             label: 'Dashboard',    icon: '📊', end: true },
     { to: '/admin/cursos',      label: 'Cursos',        icon: '📚' },
+    { to: '/admin/instructores', label: 'Instructores', icon: '🧑‍🏫' },
     { to: '/admin/usuarios',    label: 'Usuarios',      icon: '👥' },
     { to: '/admin/comentarios', label: 'Comentarios',   icon: '💬' },
 ];
 
+const INSTRUCTOR_NAV = [
+    { to: '/instructor',        label: 'Mis cursos',    icon: '📚', end: true },
+    { to: '/instructor/perfil', label: 'Mi perfil público', icon: '🧑‍🏫' },
+];
+
+const NAVS = { admin: ADMIN_NAV, instructor: INSTRUCTOR_NAV };
+const TITLES = { admin: 'Panel Admin', instructor: 'Panel Instructor' };
+
 const STORAGE_KEY = 'adminSidebarCollapsed';
 
-export default function AdminLayout() {
+// Layout con sidebar compartido por el panel admin y el panel del instructor
+export default function PanelLayout({ mode = 'admin' }) {
+    const nav = NAVS[mode];
+    const home = nav[0].to;
     const { logout } = useAuth();
     const [collapsed, setCollapsed] = useState(() => localStorage.getItem(STORAGE_KEY) === '1');
 
@@ -27,13 +40,13 @@ export default function AdminLayout() {
     return (
         <div className={`admin-layout${collapsed ? ' admin-layout--collapsed' : ''}`}>
             <aside className="admin-layout__sidebar">
-                <Link to="/admin" className="admin-layout__sidebar-logo">
-                    Panel Admin
-                    <span>Cursos de Excel</span>
+                <Link to={home} className="admin-layout__sidebar-logo">
+                    {TITLES[mode]}
+                    <span>{BRAND_NAME}</span>
                 </Link>
 
                 <nav className="admin-layout__nav">
-                    {NAV.map(({ to, label, icon, end }) => (
+                    {nav.map(({ to, label, icon, end }) => (
                         <NavLink
                             key={to}
                             to={to}

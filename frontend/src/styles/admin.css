@@ -577,3 +577,82 @@
     .admin-form__field-row { grid-template-columns: 1fr; }
     .admin-search { width: 100%; }
 }
+
+/* ═══ Bloque: admin-notice (mensaje de confirmación) ═══ */
+.admin-notice {
+    padding: 8px 12px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 6px;
+    color: var(--primary-light);
+    font-size: 0.85rem;
+}
+
+/* ═══ Bloque: bunny-uploader (subida de video con progreso) ═══ */
+.bunny-uploader {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.bunny-uploader__bar {
+    width: 100%;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bunny-uploader__fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.2s;
+}
+
+/* ═══ Bloque: application-card (solicitudes de instructor) ═══ */
+.application-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.application-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.application-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.application-card__name { font-weight: 700; }
+.application-card__email,
+.application-card__date { color: var(--text-muted); font-size: 0.8rem; }
+.application-card__headline { color: var(--primary-light); font-size: 0.9rem; }
+
+.application-card__label {
+    color: var(--text-dim);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.application-card__text {
+    color: var(--text);
+    font-size: 0.875rem;
+    white-space: pre-line;
+}
+
+.application-card__text a { color: var(--primary); word-break: break-all; }
+
+.admin-form--narrow { max-width: 640px; }

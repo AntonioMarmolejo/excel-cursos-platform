@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/client';
 
 export default function AdminDashboard() {
@@ -33,6 +34,18 @@ export default function AdminDashboard() {
                     <div className="stat-card__label">Nuevos (30 días)</div>
                     <div className="stat-card__value">{stats.newUsersLast30Days}</div>
                 </div>
+                <div className="stat-card">
+                    <div className="stat-card__label">Instructores</div>
+                    <div className="stat-card__value">{stats.totalInstructors}</div>
+                </div>
+                <Link to="/admin/instructores" className="stat-card">
+                    <div className="stat-card__label">Solicitudes de instructor</div>
+                    <div className="stat-card__value">{stats.pendingApplications}</div>
+                </Link>
+                <Link to="/admin/cursos?estado=pending" className="stat-card">
+                    <div className="stat-card__label">Cursos por revisar</div>
+                    <div className="stat-card__value">{stats.pendingCourses}</div>
+                </Link>
             </div>
 
             {stats.recentComments?.length > 0 && (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import { BRAND_NAME } from '../config/brand';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ export default function ForgotPasswordPage() {
     <div className="auth-page">
       <div className="auth-page__card">
         <div className="auth-page__logo">
-          <h1>Cursos de Excel</h1>
+          <h1>{BRAND_NAME}</h1>
           <p>Recupera tu contraseña</p>
         </div>
 

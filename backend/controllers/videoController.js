@@ -218,8 +218,26 @@ exports.remove = async (req, res) => {
 // ── GET /api/videos/course/:courseId (dueño/admin) ─
 exports.getByCourse = async (req, res) => {
     try {
-        await loadManagedCourse(req.params.courseId, req.user);
+        const course = await loadManagedCourse(req.params.courseId, req.user);
         const videos = await Video.find({ course: req.params.courseId }).sort('order');
+
+        // Videos recién subidos se guardan con duración 0 mientras Bunny los codifica:
+        // al listar, se completa la duración de los que ya terminaron.
+        const pending = videos.filter(v => !v.duration);
+        if (pending.length) {
+            const results = await Promise.allSettled(pending.map(async (v) => {
+                const bunnyRes = await bunnyRequest(`/videos/${encodeURIComponent(v.bunnyVideoId)}`);
+                const data = bunnyRes.ok ? await bunnyRes.json() : null;
+                if (data?.status === 4 && data.length) {
+                    v.duration = Math.round(data.length);
+                    await v.save();
+                    return true;
+                }
+                return false;
+            }));
+            if (results.some(r => r.value)) await course.recalcTotals();
+        }
+
         res.json({ success: true, videos });
     } catch (err) {
         sendError(res, err);

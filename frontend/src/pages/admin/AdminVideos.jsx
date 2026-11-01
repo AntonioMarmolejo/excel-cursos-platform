@@ -2,12 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api/client';
 import AdminModal from '../../components/AdminModal';
+import BunnyUploader from '../../components/BunnyUploader';
 
 const EMPTY = { title: '', description: '', section: '', bunnyVideoId: '', resourceUrl: '', duration: 0, order: 1, isPublished: true };
 
 const fmtSecs = s => { const m = Math.floor(s / 60); return `${m}:${String(s % 60).padStart(2, '0')}`; };
 
-export default function AdminVideos() {
+// Gestión de videos de un curso, compartida por el admin y el instructor dueño.
+// El instructor solo sube archivos; el admin además puede pegar un Bunny ID existente.
+export default function AdminVideos({ mode = 'admin' }) {
+    const isAdmin = mode === 'admin';
     const { courseId } = useParams();
     const [courseName, setCourseName] = useState('');
     const [videos, setVideos] = useState([]);
@@ -30,12 +34,12 @@ export default function AdminVideos() {
     );
 
     useEffect(() => {
-        api.get('/admin/courses').then(r => {
+        api.get(isAdmin ? '/admin/courses' : '/courses/mine').then(r => {
             const c = r.data.courses.find(c => c._id === courseId);
             if (c) setCourseName(c.title);
         }).catch(() => {});
         loadVideos();
-    }, [courseId]);
+    }, [courseId, isAdmin]);
 
     // Muestra el botón de "volver arriba" solo después de bajar un poco
     useEffect(() => {
@@ -92,6 +96,7 @@ export default function AdminVideos() {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        if (!form.bunnyVideoId) return setError('Sube un video antes de guardar');
         setSaving(true); setError('');
         const payload = { ...form, course: courseId, duration: Number(form.duration), order: Number(form.order) };
         try {
@@ -116,7 +121,7 @@ export default function AdminVideos() {
     return (
         <>
             <div className="admin-page__breadcrumb">
-                <Link to="/admin/cursos">Cursos</Link> / {courseName || '…'}
+                <Link to={isAdmin ? '/admin/cursos' : '/instructor'}>{isAdmin ? 'Cursos' : 'Mis cursos'}</Link> / {courseName || '…'}
             </div>
 
             <div className="admin-page__header">
@@ -141,22 +146,24 @@ export default function AdminVideos() {
                 <table className="admin-table__table">
                     <thead>
                         <tr>
-                            <th>#</th><th>Título</th><th>Sección</th><th>Bunny ID</th>
+                            <th>#</th><th>Título</th><th>Sección</th>{isAdmin && <th>Bunny ID</th>}
                             <th>Duración</th><th>Gratis</th><th>Estado</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {videos.length === 0 && (
-                            <tr><td colSpan={8} className="admin-empty">No hay videos</td></tr>
+                            <tr><td colSpan={isAdmin ? 8 : 7} className="admin-empty">No hay videos</td></tr>
                         )}
                         {videos.map(v => (
                             <tr key={v._id}>
                                 <td>{v.order}</td>
                                 <td className="admin-table__cell--title">{v.title}</td>
                                 <td className="admin-table__cell--muted-sm">{v.section || '—'}</td>
-                                <td className="admin-table__cell--mono">
-                                    {v.bunnyVideoId?.slice(0, 18)}…
-                                </td>
+                                {isAdmin && (
+                                    <td className="admin-table__cell--mono">
+                                        {v.bunnyVideoId?.slice(0, 18)}…
+                                    </td>
+                                )}
                                 <td>{v.duration > 0 ? fmtSecs(v.duration) : '—'}</td>
                                 <td><span className={`badge ${v.isFree ? 'badge--green' : 'badge--gray'}`}>{v.isFree ? 'Sí' : 'No'}</span></td>
                                 <td><span className={`badge ${v.isPublished ? 'badge--green' : 'badge--yellow'}`}>{v.isPublished ? 'Publicado' : 'Borrador'}</span></td>
@@ -188,15 +195,27 @@ export default function AdminVideos() {
                         </div>
 
                         <div className="admin-form__field">
-                            <label>Bunny Video ID *</label>
-                            <input
-                                name="bunnyVideoId"
-                                value={form.bunnyVideoId}
-                                onChange={handleChange}
-                                onBlur={handleBunnyIdBlur}
-                                required
-                                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                            <label>Video *</label>
+                            <BunnyUploader
+                                courseId={courseId}
+                                title={form.title}
+                                onFileChosen={(title) => setForm(p => (p.title ? p : { ...p, title }))}
+                                onUploaded={(bunnyVideoId) => {
+                                    lastFetchedBunnyId.current = bunnyVideoId;
+                                    setForm(p => ({ ...p, bunnyVideoId }));
+                                }}
                             />
+                            {isAdmin ? (
+                                <input
+                                    name="bunnyVideoId"
+                                    value={form.bunnyVideoId}
+                                    onChange={handleChange}
+                                    onBlur={handleBunnyIdBlur}
+                                    placeholder="…o pega un Bunny Video ID existente"
+                                />
+                            ) : (
+                                form.bunnyVideoId && !editing._id && <p className="admin-form__hint">Video listo para guardar.</p>
+                            )}
                         </div>
 
                         <div className="admin-form__field">
@@ -206,7 +225,7 @@ export default function AdminVideos() {
                                 list="section-options"
                                 value={form.section}
                                 onChange={handleChange}
-                                placeholder="Ej. El entorno de Excel"
+                                placeholder="Ej. Introducción"
                                 autoComplete="off"
                             />
                             <datalist id="section-options">

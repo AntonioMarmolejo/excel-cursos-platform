@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/client';
 import '../styles/AuthPage.css';
+import { BRAND_NAME } from '../config/brand';
 
 export default function VerifyEmailPage() {
   const { token } = useParams();
@@ -17,7 +18,7 @@ export default function VerifyEmailPage() {
     <div className="auth-page">
       <div className="auth-page__card">
         <div className="auth-page__logo">
-          <h1>Cursos de Excel</h1>
+          <h1>{BRAND_NAME}</h1>
           <p>Verificación de cuenta</p>
         </div>
 

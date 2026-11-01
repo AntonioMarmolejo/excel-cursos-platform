@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import VideoPlayer from '../components/VideoPlayer';
@@ -22,6 +23,7 @@ const fmtDuration = (secs) => {
 export default function CoursePage() {
     const { slug } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [course, setCourse] = useState(null);
     const [videos, setVideos] = useState([]);
@@ -98,13 +100,22 @@ export default function CoursePage() {
         if (next && !next.locked) setSelected(next);
     }, [markCompleted, selectedVideo, videos]);
 
+    // Ver lecciones requiere cuenta: el visitante va al login y vuelve a este curso
+    const requireLogin = () => {
+        if (user) return false;
+        navigate('/login', { state: { from: `/cursos/${slug}`, message: 'Inicia sesión para ver las lecciones del curso' } });
+        return true;
+    };
+
     const handleContinue = () => {
+        if (requireLogin()) return;
         const next = findNextVideo(videos);
         if (next) setSelected(next);
         setView('player');
     };
 
     const handleSelectFromList = (video) => {
+        if (requireLogin()) return;
         setSelected(video);
         setView('player');
     };
@@ -152,6 +163,13 @@ export default function CoursePage() {
         return (
             <div className="course-page">
                 <Navbar />
+
+                {!course.isPublished && (
+                    <div className="course-page__preview-banner">
+                        👁 Vista previa: este curso aún no está publicado
+                        {course.reviewStatus === 'pending' ? ' (en revisión)' : ''}. Solo tú puedes verlo.
+                    </div>
+                )}
 
                 <div className="course-page__breadcrumb">
                     <Link to="/">Inicio</Link> <span>›</span> <Link to="/">Cursos</Link> <span>›</span> <span>{course.title}</span>
