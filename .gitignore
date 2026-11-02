@@ -24,3 +24,7 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Exportaciones de la base de datos (contienen datos de usuarios)
+backend/datos-*.json
+*.tgz
