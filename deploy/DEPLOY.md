@@ -24,36 +24,18 @@ En [Compute Engine → Instancias de VM](https://console.cloud.google.com/comput
 
 1. **IP estática.** Abre la VM de Flujo → *Editar* → *Interfaces de red* → *Dirección IPv4 externa* → **Reservar dirección IP estática**. Si la IP es efímera, cambia al reiniciar la VM y el dominio dejaría de funcionar. Anota la IP; la usarás en los pasos 2 y 3.
 2. **Firewall.** En la misma pantalla de edición, deja marcados **Permitir tráfico HTTP** y **Permitir tráfico HTTPS**.
-3. Entra con el botón **SSH** (se abre una terminal en el navegador) y revisa qué hay instalado:
+3. Revisión hecha el 2026-11-01. La VM **`around`** (e2-micro, `us-central1-a`, IP estática `34.133.234.84`, nombre `flujo-ip-estatica`) ya tiene todo instalado:
 
-   ```bash
-   node -v          # Vite 8 necesita Node 20.19 o superior (ideal: 22)
-   pm2 -v
-   nginx -v
-   certbot --version
-   free -h          # memoria disponible
-   ```
+   | Herramienta | Versión |
+   |---|---|
+   | Node | v24.14.1 |
+   | PM2 | 6.0.14 |
+   | Nginx | 1.24.0 (5 sitios más: flujo, stylestore, proyectodiecinueve…) |
+   | Certbot | 2.9.0 |
 
-   Instala lo que falte:
+   El puerto 5000 es de Flujo; el **5100 está libre** para eccursos. La RAM es justa (1 GB, ~500 MB libres más 758 MB de swap), pero alcanza: el backend usa ~80 MB y la compilación del frontend ~160 MB. `deploy.sh` compila con baja prioridad y memoria limitada para no afectar a los otros proyectos.
 
-   ```bash
-   # Node 22 (si `node -v` es menor que 20.19). Flujo usa Express 5, compatible con Node 22.
-   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-
-   sudo npm install -g pm2                                       # si no está
-   sudo apt-get install -y nginx certbot python3-certbot-nginx   # si no están
-   ```
-
-   > Si actualizaste Node y Flujo corre con PM2, reinícialo: `pm2 restart all`.
-
-4. **Memoria de intercambio.** Si `free -h` muestra 1 GB de RAM o menos (e2-micro), crea un swap; si no, la compilación del frontend puede quedarse sin memoria:
-
-   ```bash
-   sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
-   sudo mkswap /swapfile && sudo swapon /swapfile
-   echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-   ```
+   > **No ejecutes `pm2 restart all`**: reiniciaría Flujo. Usa siempre `pm2 restart eccursos-backend`.
 
 ## 2. Base de datos en MongoDB Atlas
 

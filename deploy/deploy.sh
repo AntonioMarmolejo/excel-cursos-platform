@@ -19,8 +19,10 @@ echo "▶ Instalando dependencias del backend…"
 npm ci --prefix backend --omit=dev
 
 echo "▶ Compilando el frontend…"
+# La VM es pequeña (1 GB) y la comparten otros proyectos: se compila con baja
+# prioridad de CPU y la memoria limitada (la compilación usa ~160 MB).
 npm ci --prefix frontend
-npm run build --prefix frontend
+NODE_OPTIONS=--max-old-space-size=256 nice -n 19 npm run build --prefix frontend
 
 echo "▶ Reiniciando el backend con PM2…"
 pm2 startOrReload ecosystem.config.js --env production --update-env
